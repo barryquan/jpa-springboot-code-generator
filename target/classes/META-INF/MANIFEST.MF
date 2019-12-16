@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Implementation-Title: barry-spring-codegen-service
+Implementation-Version: 1.0.x
+Build-Jdk-Spec: 1.8
+Created-By: Maven Integration for Eclipse
+
