@@ -56,6 +56,7 @@ public class CodeGenerator {
         //.clazzInclude(me.itlearner.jpacodegen.sample.entity.SampleUser.class) // 加入生成的实体类名
         //.clazzExlude(me.itlearner.jpacodegen.sample.entity.SampleUser.class) // 排除生成的实体类名，通常与packInclude混用，以排除包下的特殊实体类不参与生成代码
         .registerRender("form") //注册dto的模板
+        .registerRender("search") //注册搜索的模板
         .registerRender("repository") //注册repository的模板
         .registerRender("service") //注册service的模板
         .registerRender("controller") //注册控制器的模板
