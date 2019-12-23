@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 默认的实体解析器
  *
- * @author gaochen Created on 2019/6/21.
  */
 @Slf4j
 public class DefaultEntityInfoParser extends BaseEntityParser {

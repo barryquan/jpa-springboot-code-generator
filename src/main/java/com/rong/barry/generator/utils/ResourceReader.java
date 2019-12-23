@@ -8,10 +8,8 @@ import java.io.InputStream;
 import lombok.experimental.UtilityClass;
 
 /**
- * TODO
+ * 文件读取工具类
  *
- * @author gaochen
- * Created on 2019/6/21.
  */
 @UtilityClass
 public class ResourceReader {

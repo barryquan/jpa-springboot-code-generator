@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 /**
  * 实体信息
  *
- * @author gaochen
- * Created on 2019/6/18.
  */
 @EqualsAndHashCode(callSuper = false)
 @Data

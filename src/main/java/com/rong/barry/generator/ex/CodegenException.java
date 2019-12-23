@@ -1,10 +1,9 @@
 package com.rong.barry.generator.ex;
 
 /**
- * exception when app running
+ * 
+ * @author quansr
  *
- * @author gaochen
- * Created on 2019/6/21.
  */
 public class CodegenException extends RuntimeException {
     /**

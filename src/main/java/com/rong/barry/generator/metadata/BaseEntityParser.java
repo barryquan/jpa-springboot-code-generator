@@ -5,8 +5,6 @@ import java.util.List;
 /**
  * 默认的实体解析器
  *
- * @author gaochen
- * Created on 2019/6/21.
  */
 public abstract class BaseEntityParser implements IEntityParser {
 

@@ -3,10 +3,8 @@ package com.rong.barry.generator.render;
 import com.rong.barry.generator.metadata.EntityInfo;
 
 /**
- * TODO
+ * 模板渲染接口
  *
- * @author gaochen
- * Created on 2019/6/20.
  */
 public interface IRender {
 

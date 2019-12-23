@@ -18,7 +18,6 @@ import com.rong.barry.generator.utils.FreeMarkerUtils;
 /**
  * 默认的模板引擎渲染实现类
  *
- * @author barry
  * 
  */
 public class DefaultRender implements IRender {

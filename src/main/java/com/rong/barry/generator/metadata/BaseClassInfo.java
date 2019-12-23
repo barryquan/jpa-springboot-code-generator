@@ -5,8 +5,6 @@ import lombok.Data;
 /**
  * 类描述信息
  *
- * @author gaochen
- * Created on 2019/6/21.
  */
 @Data
 public abstract class BaseClassInfo {

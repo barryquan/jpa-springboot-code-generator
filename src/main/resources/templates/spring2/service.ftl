@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rong.barry.base.BaseSearchDto;
 import com.rong.barry.base.BaseService;
 import com.rong.barry.base.PageInfo;
 import ${entity.packageName}.${entity.className};
@@ -85,7 +86,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 分页列表
      */
     public Page<${entity.className}> getPageList(Map<String, Object> searchParams, PageInfo pageInfo) {
-        ${entity.className}SearchDto searchDto = conver(searchParams, ${entity.className}SearchDto.class);
+        BaseSearchDto searchDto = conver(searchParams, ${entity.className}SearchDto.class);
         Map<String, Object> searchmap = searchDto.getSearchParams();
         log.debug("${entity.className}的分页搜索的条件是={},排序的字段为={}", searchmap, pageInfo.getSortType());
         return getPage(searchmap, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
@@ -99,7 +100,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 信息列表
      */
     public List<${entity.className}> findByParams(Map<String, Object> searchParams) {
-        ${entity.className}SearchDto searchDto = conver(searchParams, ${entity.className}SearchDto.class);
+        BaseSearchDto searchDto = conver(searchParams, ${entity.className}SearchDto.class);
         log.debug("${entity.className}的不分页搜索的参数是={}", searchDto);
         return findAllByMapParams(searchDto.getSearchParams(), Direction.DESC, "id");
     }

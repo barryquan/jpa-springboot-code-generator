@@ -1,0 +1,19 @@
+server:
+  servlet:
+    context-path: /api
+spring:
+  data:
+    rest:
+      base-path: /rest
+  application:
+    name: test
+  jackson:
+    time-zone: GMT+8
+  profiles:
+    active: ${spring.profiles.active}
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://localhost:3306/rong_spring_test?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver

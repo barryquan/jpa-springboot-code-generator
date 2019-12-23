@@ -21,10 +21,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * TODO
+ * FreeMarker模板工具帮助类
  *
- * @author gaochen
- * Created on 2019/6/20.
  */
 @Slf4j
 @UtilityClass

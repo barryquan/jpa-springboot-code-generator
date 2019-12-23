@@ -3,8 +3,6 @@ package com.rong.barry.generator.metadata;
 /**
  * 实体解析器
  *
- * @author gaochen
- * Created on 2019/6/21.
  */
 public interface IEntityParser {
 
