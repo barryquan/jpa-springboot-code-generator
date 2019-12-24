@@ -2,6 +2,8 @@ package ${packageName};
 
 import java.util.Map;
 
+import org.springframework.util.StringUtils;
+
 import com.rong.barry.base.BaseSearchDto;
 
 import lombok.Data;
@@ -18,7 +20,7 @@ import ${import};
  * Created On ${date}.
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class ${className} extends BaseSearchDto{
 
 
@@ -37,7 +39,17 @@ public class ${className} extends BaseSearchDto{
      */
     @Override
     public void buildSearchParams(Map<String, Object> map) {
-        
+        <#if entity.fields?? && (entity.fields?size > 0)>
+    <#list entity.fields as f>
+    <#if f.className == "String">
+        if (StringUtils.hasText(this.${f.name})) {
+            putNoNull("LIKE_${f.name}", this.${f.name}, map);
+        }
+    <#else>
+        putNoNull("EQ_${f.name}", this.${f.name}, map);
+    </#if>
+    </#list>
+    </#if>
     }
 
 }

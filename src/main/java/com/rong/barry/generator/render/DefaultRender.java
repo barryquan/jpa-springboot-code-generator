@@ -44,10 +44,15 @@ public class DefaultRender implements IRender {
         renderingRequest.setClassName(entityInfo.getClassName() + moduleConfig.getClassNameSuffix());
 
         // 包名
-        String packageName = entityInfo.getPackageName().replace(config.getEntityFlag(), moduleConfig.getFlag());
+        // String packageName =
+        // entityInfo.getPackageName().replace(config.getEntityFlag(),
+        // moduleConfig.getFlag());
+        String packageName = moduleConfig.getFlag();
 
         renderingRequest.setPackageName(packageName);
-        renderingRequest.setSavePath("src/main/java/" + packageName.replace(".", "/") + "/");
+
+//        renderingRequest.setSavePath(packageName.replace(".", "/") + "/");
+         renderingRequest.setSavePath("src/main/java/" + packageName.replace(".", "/")+ "/");
         renderingRequest.setFtlName(moduleConfig.getFtlName());
 
         renderingRequest.setFtlPath(config.getFtlPath());

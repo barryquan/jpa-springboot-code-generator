@@ -30,4 +30,10 @@ public class User extends BaseEntity {
      * 用户名
      */
     private String username;
+
+    private String email;
+
+    private String password;
+
+    private Integer age;
 }

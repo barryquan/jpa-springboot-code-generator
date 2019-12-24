@@ -16,7 +16,7 @@ import ${import};
  * Created On ${date}.
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class ${className} extends BaseDto{
 
     /**

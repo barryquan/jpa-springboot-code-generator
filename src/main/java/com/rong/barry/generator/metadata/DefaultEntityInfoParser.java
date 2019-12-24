@@ -95,10 +95,10 @@ public class DefaultEntityInfoParser extends BaseEntityParser {
 //            }
         }
         // try from super class
-        Class<?> maybeExists = clazz.getSuperclass();
-        if (!Object.class.equals(maybeExists)) {
-            fields.addAll(parseField(maybeExists));
-        }
+//        Class<?> maybeExists = clazz.getSuperclass();
+//        if (!Object.class.equals(maybeExists)) {
+//            fields.addAll(parseField(maybeExists));
+//        }
         return fields;
     }
 
