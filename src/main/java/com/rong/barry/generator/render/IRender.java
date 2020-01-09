@@ -9,12 +9,18 @@ import com.rong.barry.generator.metadata.EntityInfo;
 public interface IRender {
 
     /**
+     * 添加斜杠
+     */
+    String SLASH = "/";
+
+    /**
      * 渲染为java文件
      *
      * @param entityInfo 实体信息
      * @param module     模块名称
+     * @param savePath   保存的目录
      * @return 渲染结果
      */
-    RenderingResponse render(EntityInfo entityInfo, String module);
+    RenderingResponse render(EntityInfo entityInfo, String module, String savePath);
 
 }

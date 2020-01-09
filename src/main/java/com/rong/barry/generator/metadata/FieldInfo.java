@@ -23,4 +23,9 @@ public class FieldInfo extends BaseClassInfo {
      */
     private List<AnnotationInfo> annotations;
 
+    /**
+     * 字段在数据库的注释
+     */
+    private String comment;
+    
 }

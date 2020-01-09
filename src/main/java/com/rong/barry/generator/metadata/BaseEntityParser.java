@@ -1,7 +1,5 @@
 package com.rong.barry.generator.metadata;
 
-import java.util.List;
-
 /**
  * 默认的实体解析器
  *
@@ -23,14 +21,6 @@ public abstract class BaseEntityParser implements IEntityParser {
      * @return 实体信息
      */
     public abstract EntityInfo parseEntity(Class<?> clazz);
-
-    /**
-     * 解析字段信息
-     *
-     * @param clazz 指定实体类
-     * @return 字段信息
-     */
-    public abstract List<FieldInfo> parseField(Class<?> clazz);
 
     /**
      * 解析主键信息

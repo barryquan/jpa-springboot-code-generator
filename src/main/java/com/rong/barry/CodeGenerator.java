@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,12 +14,18 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 import com.rong.barry.generator.config.CodeGeneratorConfig;
 import com.rong.barry.generator.config.ModuleConfig;
+import com.rong.barry.generator.db.DataBaseEntityUtils;
 import com.rong.barry.generator.ex.CodegenException;
 import com.rong.barry.generator.metadata.DefaultEntityInfoParser;
 import com.rong.barry.generator.metadata.EntityInfo;
+import com.rong.barry.generator.metadata.FieldInfo;
 import com.rong.barry.generator.metadata.IEntityParser;
+import com.rong.barry.generator.metadata.IdInfo;
 import com.rong.barry.generator.render.DefaultRender;
 import com.rong.barry.generator.render.IRender;
 import com.rong.barry.generator.utils.ReflectUtils;
@@ -52,17 +59,30 @@ public class CodeGenerator {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         new CodeGenerator("src/main/resources/codegen.properties")
-        .packInclude("com.rong.barry.entity") // 批量加入生成的实体类包名
-        //.clazzInclude(me.itlearner.jpacodegen.sample.entity.SampleUser.class) // 加入生成的实体类名
-        //.clazzExlude(me.itlearner.jpacodegen.sample.entity.SampleUser.class) // 排除生成的实体类名，通常与packInclude混用，以排除包下的特殊实体类不参与生成代码
-        .registerRender("form") //注册dto的模板
-        .registerRender("search") //注册搜索的模板
-        .registerRender("repository") //注册repository的模板
-        .registerRender("service") //注册service的模板
-        .registerRender("controller") //注册控制器的模板
-        .generate(); // 开始自动生成
+                // .packInclude("com.rong.barry.entity") // 批量加入生成的实体类包名
+                // .clazzInclude(me.itlearner.jpacodegen.sample.entity.SampleUser.class) //
+                // 加入生成的实体类名
+                // .clazzExlude(me.itlearner.jpacodegen.sample.entity.SampleUser.class) //
+                // 排除生成的实体类名，通常与packInclude混用，以排除包下的特殊实体类不参与生成代码
+                .packSuperClazz("com.rong.barry.base.BaseEntity") // 实体需要继承的父类，用来排除不需要加入到实体的字段
+                .registerRender("entity") // 注册实体模板
+                .registerRender("form") // 注册dto的模板
+                .registerRender("search") // 注册搜索的模板
+                .registerRender("repository") // 注册repository的模板
+                .registerRender("service") // 注册service的模板
+                .registerRender("controller") // 注册控制器的模板
+                .generate(); // 开始自动生成
         log.info("thanks you use,code generator sucess");
         log.info("generator code use {} ms", System.currentTimeMillis() - start);
+    }
+
+    private CodeGenerator packSuperClazz(String superEntityClass) {
+        try {
+            config.setSuperEntityClass(Class.forName(superEntityClass));
+        } catch (ClassNotFoundException e) {
+            log.error("找不到父类对应的class,原因={}", e);
+        }
+        return this;
     }
 
     /**
@@ -82,9 +102,19 @@ public class CodeGenerator {
             config.setFtlPath(properties.getProperty("template.dir", SRC_PATH + "resources/templates/"));
             config.setCover(Boolean.parseBoolean(properties.getProperty("cover", "false")));
 
-            // io.github.gcdd1993.entity -> entity flag is entity
-            config.setEntityFlag(properties.getProperty("entity.flag", "entity"));
-
+            config.setEntityFlag(properties.getProperty("entity.flag", ""));
+            config.setBaseProjectPath(properties.getProperty("base.project.path", SRC_PATH + "java"));
+            // 实体的主键
+            config.setEntityIdClass(properties.getProperty("entity.id.class", "Integer"));
+            // 实体的主键包名
+            config.setEntityIdPackName(properties.getProperty("entity.id.package.name", ""));
+            // 使用使用数据库进行生成
+            config.setUseDb(Boolean.parseBoolean(properties.getProperty("db.flag", "false")));
+            // 数据库相关的配置
+            config.getDbProperties().setDriver(properties.getProperty("db.driver"));
+            config.getDbProperties().setJdbcUrl(properties.getProperty("db.url"));
+            config.getDbProperties().setPassword(properties.getProperty("db.password"));
+            config.getDbProperties().setUser(properties.getProperty("db.user"));
             // custom other params
             Map<String, String> otherParams = new HashMap<>(256);
             for (Object key : properties.keySet()) {
@@ -164,16 +194,46 @@ public class CodeGenerator {
     }
 
     public void generate() {
-        List<EntityInfo> entityInfos = config.getEntityClasses().stream().map(entityParser::parse)
-                .filter(Objects::nonNull).collect(Collectors.toList());
+        List<EntityInfo> entityInfos = null;
+        if (!CollectionUtils.isEmpty(config.getEntityClasses())) {
+            entityInfos = config.getEntityClasses().stream().map(entityParser::parse).filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } else {
+            entityInfos = getEntityFromDb();
+            entityInfos.forEach(e -> {
+                e.setPackageName(config.getEntityFlag());
+                IdInfo idInfo = new IdInfo();
+                idInfo.setClassName(config.getEntityIdClass());
+                idInfo.setPackageName(config.getEntityIdPackName());
+                e.setId(idInfo);
+            });
+        }
 
-        if (!entityInfos.isEmpty()) {
+        if (!CollectionUtils.isEmpty(entityInfos)) {
             log.info("find {} entity classes, now start generate code.", entityInfos.size());
 
-            entityInfos.forEach(entityInfo -> moduleList.forEach(module -> render.render(entityInfo, module)));
+            entityInfos.forEach(entityInfo -> moduleList
+                    .forEach(module -> render.render(entityInfo, module, config.getBaseProjectPath())));
         } else {
             log.warn("find none entity class, please check your entity package is true.");
         }
+    }
+
+    /**
+     * 从数据库中获取实体的信息
+     * 
+     * @return
+     */
+    private List<EntityInfo> getEntityFromDb() {
+        List<String> superFieldList;
+        if (config.getSuperEntityClass() != null) {
+            List<FieldInfo> fieldInfos = entityParser.parseField(config.getSuperEntityClass());
+            superFieldList = fieldInfos.stream().filter(a -> StringUtils.hasText(a.getName())).map(FieldInfo::getName)
+                    .collect(Collectors.toList());
+        } else {
+            superFieldList = new ArrayList<>();
+        }
+        return DataBaseEntityUtils.getEntityFromDb(config.getDbProperties(), superFieldList);
     }
 
     /**

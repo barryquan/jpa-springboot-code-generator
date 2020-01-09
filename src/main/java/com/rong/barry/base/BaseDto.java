@@ -1,7 +1,7 @@
 package com.rong.barry.base;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.MappedSuperclass;
 
@@ -29,11 +29,11 @@ public abstract class BaseDto implements Serializable {
     protected Integer id;
 
     /** 实体创建时间 */
-    protected Date created;
+    protected LocalDateTime createdDate = LocalDateTime.now();
 
     /** 实体更新时间 */
-    protected Date modified;
+    protected LocalDateTime modifiedDate;
 
     /** 实体删除标记，为false表示删除 */
-    protected Boolean isActive;
+    protected Boolean isActive = Boolean.TRUE;
 }

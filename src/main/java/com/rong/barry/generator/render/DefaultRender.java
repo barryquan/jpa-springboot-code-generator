@@ -17,7 +17,7 @@ import com.rong.barry.generator.utils.FreeMarkerUtils;
 
 /**
  * 默认的模板引擎渲染实现类
- *
+ * 
  * 
  */
 public class DefaultRender implements IRender {
@@ -34,7 +34,7 @@ public class DefaultRender implements IRender {
      * 渲染对应的模板
      */
     @Override
-    public final RenderingResponse render(EntityInfo entityInfo, String module) {
+    public final RenderingResponse render(EntityInfo entityInfo, String module, String savePath) {
         RenderingRequest renderingRequest = new RenderingRequest();
 
         renderingRequest.setLastRenderResponse(lastRenderingResponseMap);
@@ -43,16 +43,11 @@ public class DefaultRender implements IRender {
         // 设置类名,为实体名称+模板配置的对应后缀
         renderingRequest.setClassName(entityInfo.getClassName() + moduleConfig.getClassNameSuffix());
 
-        // 包名
-        // String packageName =
-        // entityInfo.getPackageName().replace(config.getEntityFlag(),
-        // moduleConfig.getFlag());
         String packageName = moduleConfig.getFlag();
 
         renderingRequest.setPackageName(packageName);
-
-//        renderingRequest.setSavePath(packageName.replace(".", "/") + "/");
-         renderingRequest.setSavePath("src/main/java/" + packageName.replace(".", "/")+ "/");
+        savePath = savePath.endsWith(IRender.SLASH) ? savePath : savePath + IRender.SLASH;
+        renderingRequest.setSavePath(savePath + packageName.replace(".", IRender.SLASH) + IRender.SLASH);
         renderingRequest.setFtlName(moduleConfig.getFtlName());
 
         renderingRequest.setFtlPath(config.getFtlPath());
@@ -89,11 +84,6 @@ public class DefaultRender implements IRender {
                 }
             });
         }
-
-//        String packageName = entityInfo.getId().getPackageName();
-//        if (!"java.lang".equals(packageName)) {
-//            imports.add(packageName);
-//        }
         return imports;
     }
 

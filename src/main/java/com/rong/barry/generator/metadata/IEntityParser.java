@@ -1,5 +1,7 @@
 package com.rong.barry.generator.metadata;
 
+import java.util.List;
+
 /**
  * 实体解析器
  *
@@ -13,4 +15,12 @@ public interface IEntityParser {
      * @return 实体信息
      */
     EntityInfo parse(Class<?> clazz);
+
+    /**
+     * 解析字段信息
+     *
+     * @param clazz 指定实体类
+     * @return 字段信息
+     */
+    List<FieldInfo> parseField(Class<?> clazz);
 }

@@ -1,7 +1,7 @@
 package com.rong.barry.base;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,10 +34,10 @@ public abstract class BaseEntity implements Serializable {
     protected Integer id;
 
     /** 实体创建时间 */
-    protected Date created = new Date();
+    protected LocalDateTime createdDate = LocalDateTime.now();
 
     /** 实体更新时间 */
-    protected Date modified;
+    protected LocalDateTime modifiedDate;
 
     /** 实体删除标记，为false表示删除 */
     protected Boolean isActive = Boolean.TRUE;
