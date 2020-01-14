@@ -53,10 +53,11 @@ public class DataBaseEntityUtils {
                 List<FieldInfo> fieldList = new ArrayList<>();
                 while (resultSet.next()) {
                     FieldInfo fieldInfo = new FieldInfo();
-                    String columnName = replaceUnderlineAndfirstToUpper(
-                            resultSet.getString("COLUMN_NAME").toLowerCase(), "_", "");
-                    if (!exludeFiledList.contains(columnName)) {
-                        fieldInfo.setName(columnName);
+                    String columName = resultSet.getString("COLUMN_NAME");
+                    fieldInfo.setColumnName(columName);
+                    String filedName = replaceUnderlineAndfirstToUpper(columName.toLowerCase(), "_", "");
+                    if (!exludeFiledList.contains(filedName)) {
+                        fieldInfo.setName(filedName);
                         String typeName = resultSet.getString("TYPE_NAME").toUpperCase();
                         fieldInfo.setPackageName(matchPackName(typeName));
                         fieldInfo.setClassName(matchClassName(typeName));

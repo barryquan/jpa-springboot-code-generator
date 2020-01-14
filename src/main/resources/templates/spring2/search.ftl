@@ -43,10 +43,10 @@ public class ${className} extends BaseSearchDto{
     <#list entity.fields as f>
     <#if f.className == "String">
         if (StringUtils.hasText(this.${f.name})) {
-            putNoNull("LIKE_${f.name}", this.${f.name}, map);
+            super.putNoNull("LIKE_${f.name}", this.${f.name}, map);
         }
     <#else>
-        putNoNull("EQ_${f.name}", this.${f.name}, map);
+        super.putNoNull("EQ_${f.name}", this.${f.name}, map);
     </#if>
     </#list>
     </#if>

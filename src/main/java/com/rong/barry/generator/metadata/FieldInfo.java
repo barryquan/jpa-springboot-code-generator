@@ -27,5 +27,10 @@ public class FieldInfo extends BaseClassInfo {
      * 字段在数据库的注释
      */
     private String comment;
-    
+
+    /**
+     * 字段在数据库的字段名
+     */
+    private String columnName;
+
 }

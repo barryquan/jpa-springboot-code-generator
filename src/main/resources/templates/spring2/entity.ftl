@@ -1,6 +1,7 @@
 package ${packageName};
 
 import com.rong.barry.base.BaseEntity;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -21,7 +22,7 @@ import ${import};
 @Entity
 @Table(name = "${entity.tableName}")
 @EqualsAndHashCode(callSuper = false)
-public class ${className} extends BaseEntity{
+public class ${className} extends BaseEntity {
 
     /**
      * 
@@ -33,6 +34,7 @@ public class ${className} extends BaseEntity{
     /**
      * TODO ${f.comment}
      */
+    @Column(name = "${f.columnName}")
     private ${f.className} ${f.name};
 
     </#list>
