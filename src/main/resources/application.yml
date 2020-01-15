@@ -20,3 +20,44 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+akali:
+  author: quansr
+  comments: 这是类的注释
+  cover: true
+  template:
+    dir: src/main/resources/templates
+  base:
+    project:
+      #path:
+  entity:
+    package: com.github.barry.akali.test.entity
+    template: entity.ftl
+    suffix: Entity
+    id:
+      class: Integer
+      package: 
+  dto:
+    package: com.github.barry.akali.test.dto
+    template: dto.ftl
+    suffix: Dto
+  search:
+    package: com.github.barry.akali.test.dto.search
+    template: search.ftl
+    suffix: SearchDto
+  controller:
+    package: com.github.barry.akali.test.endpoint
+    template: endpoint.ftl
+    suffix: Endpoint
+  service:
+    package: com.github.barry.akali.test.service
+    template: service.ftl
+    suffix: Service
+  repository:
+    package: com.github.barry.akali.test.repository
+    template: repository.ftl
+    suffix: Repository
+  db:
+    driver: com.mysql.cj.jdbc.Driver
+    url: "jdbc:mysql://localhost:3306/rong_spring_test?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai"
+    username: root
+    password: 123456
