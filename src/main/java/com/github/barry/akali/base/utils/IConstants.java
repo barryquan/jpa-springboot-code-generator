@@ -1,4 +1,4 @@
-package com.github.barry.akali.base;
+package com.github.barry.akali.base.utils;
 
 /**
  * 系统初始化常量

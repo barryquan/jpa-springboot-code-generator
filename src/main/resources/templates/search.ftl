@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
-import com.github.barry.akali.base.BaseSearchDto;
+import com.github.barry.akali.base.dto.BaseSearchDto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

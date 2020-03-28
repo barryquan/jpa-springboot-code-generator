@@ -1,9 +1,7 @@
-package com.github.barry.akali.base;
+package com.github.barry.akali.base.dto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
-import javax.persistence.MappedSuperclass;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +15,6 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-@MappedSuperclass
 public abstract class BaseDto implements Serializable {
 
     /**

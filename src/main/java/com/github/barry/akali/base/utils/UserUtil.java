@@ -1,4 +1,4 @@
-package com.github.barry.akali.base;
+package com.github.barry.akali.base.utils;
 
 import lombok.extern.slf4j.Slf4j;
 

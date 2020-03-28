@@ -16,8 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.barry.akali.base.SearchFilter.Operator;
 import com.github.barry.akali.base.conver.EnumConverter;
+import com.github.barry.akali.base.utils.JpaSearchUtils;
+import com.github.barry.akali.base.utils.SearchFilter;
+import com.github.barry.akali.base.utils.UserUtil;
+import com.github.barry.akali.base.utils.SearchFilter.Operator;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
@@ -113,7 +116,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     public long count() {
         List<SearchFilter> sfList = new ArrayList<>();
         sfList.add(new SearchFilter(isActive, Operator.EQ, Boolean.TRUE));
-        return baseRepository.count(PageUtils.bySearchFilter(sfList));
+        return baseRepository.count(JpaSearchUtils.bySearchFilter(sfList));
     }
 
     /**
@@ -138,7 +141,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public List<T> findAllByMapParams(Map<String, Object> searchParams, Direction direction, String... sortType) {
-        return baseRepository.findAll(PageUtils.buildSpec(searchParams), Sort.by(direction, sortType));
+        return baseRepository.findAll(JpaSearchUtils.buildSpec(searchParams), Sort.by(direction, sortType));
     }
 
     /**
@@ -154,7 +157,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     @Transactional(readOnly = true)
     public Page<T> getPage(Map<String, Object> searchParams, int pageNumber, int pageSize, Direction direction,
             String... sortType) {
-        return baseRepository.findAll(PageUtils.buildSpec(searchParams),
+        return baseRepository.findAll(JpaSearchUtils.buildSpec(searchParams),
                 PageRequest.of(pageNumber - 1, pageSize, Sort.by(direction, sortType)));
     }
 
@@ -187,7 +190,7 @@ public abstract class BaseService<T, ID extends Serializable> {
         List<SearchFilter> sfList = new ArrayList<>();
         sfList.add(new SearchFilter(param, operator, object));
         sfList.add(new SearchFilter(isActive, Operator.EQ, Boolean.TRUE));
-        return baseRepository.count(PageUtils.bySearchFilter(sfList));
+        return baseRepository.count(JpaSearchUtils.bySearchFilter(sfList));
     }
 
     /**
@@ -237,7 +240,7 @@ public abstract class BaseService<T, ID extends Serializable> {
         List<SearchFilter> sfList = new ArrayList<>();
         sfList.add(new SearchFilter(param, operator, object));
         sfList.add(new SearchFilter(isActive, Operator.EQ, Boolean.TRUE));
-        return baseRepository.findAll(PageUtils.bySearchFilter(sfList));
+        return baseRepository.findAll(JpaSearchUtils.bySearchFilter(sfList));
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.github.barry.akali.base;
+package com.github.barry.akali.base.utils;
 
 /**
  * 分页参数类型

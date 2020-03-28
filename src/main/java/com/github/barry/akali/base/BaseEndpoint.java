@@ -21,6 +21,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
 
+import com.github.barry.akali.base.utils.IConstants;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**

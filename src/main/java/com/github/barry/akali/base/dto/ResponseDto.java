@@ -1,6 +1,7 @@
-package com.github.barry.akali.base;
+package com.github.barry.akali.base.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.barry.akali.base.utils.IConstants;
 
 /***
  * 封装统一返回的Json数据结构

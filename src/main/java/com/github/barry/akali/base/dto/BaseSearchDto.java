@@ -1,4 +1,4 @@
-package com.github.barry.akali.base;
+package com.github.barry.akali.base.dto;
 
 import java.util.HashMap;
 import java.util.Map;

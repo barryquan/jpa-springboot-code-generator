@@ -8,9 +8,9 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.barry.akali.base.BaseSearchDto;
+import com.github.barry.akali.base.dto.BaseSearchDto;
 import com.github.barry.akali.base.BaseService;
-import com.github.barry.akali.base.PageInfo;
+import com.github.barry.akali.base.utils.PageInfo;
 import ${entity.packageName}.${entity.className};
 import ${lastRenderResponse.dto.packageName}.${lastRenderResponse.dto.className};
 import ${lastRenderResponse.search.packageName}.${lastRenderResponse.search.className};
@@ -41,8 +41,8 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
     @Transactional(readOnly = false)
     public ${entity.className} create(${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${entity.className} ${entity.className?uncap_first} = new ${entity.className}();
-        mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
-        return save(${entity.className?uncap_first});
+        super.mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
+        return super.save(${entity.className?uncap_first});
     }
 
     /**
@@ -51,7 +51,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      */
     @Transactional(readOnly = false)
     public void deleteById(${entity.id.className} id) {
-        delete(id);
+        super.delete(id);
     }
 
     /**
@@ -64,8 +64,8 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
     @Transactional(readOnly = false)
     public ${entity.className} update(${entity.id.className} id, ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${entity.className} ${entity.className?uncap_first} = details(id);
-        mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
-        return save(${entity.className?uncap_first});
+        super.mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
+        return super.save(${entity.className?uncap_first});
     }
 
     /**
@@ -75,7 +75,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 实体对象
      */
     public ${entity.className} details(${entity.id.className} id) {
-        return findOne(id).orElseGet(() -> new ${entity.className}());
+        return super.findOne(id).orElseGet(() -> new ${entity.className}());
     }
 
     /**
@@ -86,10 +86,10 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 分页列表
      */
     public Page<${entity.className}> getPageList(Map<String, Object> searchParams, PageInfo pageInfo) {
-        BaseSearchDto searchDto = conver(searchParams, ${entity.className}SearchDto.class);
+        BaseSearchDto searchDto = super.conver(searchParams, ${entity.className}SearchDto.class);
         Map<String, Object> searchmap = searchDto.getSearchParams();
         log.debug("${entity.className}的分页搜索的条件是={},排序的字段为={}", searchmap, pageInfo.getSortType());
-        return getPage(searchmap, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
+        return super.getPage(searchmap, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
                 pageInfo.getSortType().split(","));
     }
     
@@ -100,8 +100,8 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 信息列表
      */
     public List<${entity.className}> findByParams(Map<String, Object> searchParams) {
-        BaseSearchDto searchDto = conver(searchParams, ${entity.className}SearchDto.class);
+        BaseSearchDto searchDto = super.conver(searchParams, ${entity.className}SearchDto.class);
         log.debug("${entity.className}的不分页搜索的参数是={}", searchDto);
-        return findAllByMapParams(searchDto.getSearchParams(), Direction.DESC, "id");
+        return super.findAllByMapParams(searchDto.getSearchParams(), Direction.DESC, "id");
     }
 }

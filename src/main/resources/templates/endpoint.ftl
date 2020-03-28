@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.barry.akali.base.BaseEndpoint;
-import com.github.barry.akali.base.PageInfo;
-import com.github.barry.akali.base.PageUtils;
-import com.github.barry.akali.base.ResponseDto;
+import com.github.barry.akali.base.utils.PageInfo;
+import com.github.barry.akali.base.utils.JpaSearchUtils;
+import com.github.barry.akali.base.dto.ResponseDto;
 import ${entity.packageName}.${entity.className};
 import ${lastRenderResponse.dto.packageName}.${lastRenderResponse.dto.className};
 import ${lastRenderResponse.service.packageName}.${lastRenderResponse.service.className};
@@ -52,7 +52,7 @@ public class ${className} extends BaseEndpoint {
     @PostMapping("")
     public ResponseEntity<?> create(@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${entity.className} ${entity.className?uncap_first} = ${lastRenderResponse.service.className?uncap_first}.create(${lastRenderResponse.dto.className?uncap_first});
-        return ResponseEntity.ok(new EntityModel<${entity.className}>(${entity.className?uncap_first}, getSelfLink(this.getClass(), ${entity.className?uncap_first}.getId())));
+        return ResponseEntity.ok(new EntityModel<${entity.className}>(${entity.className?uncap_first}, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}.getId())));
     }
 
     /**
@@ -77,7 +77,7 @@ public class ${className} extends BaseEndpoint {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable ${entity.id.className} id,@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className}) {
         ${entity.className} ${entity.className?uncap_first} = ${lastRenderResponse.service.className?uncap_first}.update(id,${lastRenderResponse.dto.className});
-        return ResponseEntity.ok(new EntityModel<${entity.className}>(${entity.className?uncap_first}, getSelfLink(this.getClass(), ${entity.className?uncap_first}.getId())));
+        return ResponseEntity.ok(new EntityModel<${entity.className}>(${entity.className?uncap_first}, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}.getId())));
     }
 
     /**
@@ -90,7 +90,7 @@ public class ${className} extends BaseEndpoint {
     @GetMapping("/{id}")
     public ResponseEntity<?> details(@PathVariable ${entity.id.className} id) {
         ${entity.className} ${entity.className?uncap_first} = ${lastRenderResponse.service.className?uncap_first}.details(id);
-        return ResponseEntity.ok(new EntityModel<${entity.className}>(${entity.className?uncap_first}, getSelfLink(this.getClass(), ${entity.className?uncap_first}.getId())));
+        return ResponseEntity.ok(new EntityModel<${entity.className}>(${entity.className?uncap_first}, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}.getId())));
     }
 
     @Override
@@ -100,10 +100,10 @@ public class ${className} extends BaseEndpoint {
             @RequestParam(value = PAGE_SIZE, defaultValue = PAGE_SIZE_VAL) int pageSize,
             @RequestParam(value = SORTTYPE, defaultValue = SORT_TYPE_VAL) String sortType, ServletRequest request) {
         // 获取搜索参数
-        Map<String, Object> searchParams = PageUtils.getParamStartWith(request, SEARCH_PREFIX1);
+        Map<String, Object> searchParams = JpaSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
         PageInfo pageInfo = new PageInfo(pageNumber, pageSize, sortType);
         Page<${entity.className}> page = ${lastRenderResponse.service.className?uncap_first}.getPageList(searchParams, pageInfo);
-        return doPage(pageNumber, pageSize, sortType, request, this.getClass(), page);
+        return super.doPage(pageNumber, pageSize, sortType, request, this.getClass(), page);
     }
 
     /**
@@ -115,9 +115,9 @@ public class ${className} extends BaseEndpoint {
     @GetMapping("/find/params")
     public ResponseEntity<?> findByParams(ServletRequest request) {
         // 1.获取搜索参数
-        Map<String, Object> searchParams = PageUtils.getParamStartWith(request, SEARCH_PREFIX1);
+        Map<String, Object> searchParams = JpaSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
         // 2.获取数据
         List<${entity.className}> dataList = ${lastRenderResponse.service.className?uncap_first}.findByParams(searchParams);
-        return doListResources(dataList, this.getClass());
+        return super.doListResources(dataList, this.getClass());
     }
 }

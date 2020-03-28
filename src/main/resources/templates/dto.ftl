@@ -1,6 +1,6 @@
 package ${packageName};
 
-import com.github.barry.akali.base.BaseDto;
+import com.github.barry.akali.base.dto.BaseDto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,4 +1,4 @@
-package com.github.barry.akali.base;
+package com.github.barry.akali.base.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @param <T>
  */
-public class PageUtils<T> {
+public class JpaSearchUtils<T> {
 
     /**
      * 取得带相同前缀的Request Parameters, copy from spring WebUtils.
