@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 基础Dto信息<br>
@@ -15,6 +16,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@ToString
 public abstract class BaseDto implements Serializable {
 
     /**
@@ -26,11 +28,11 @@ public abstract class BaseDto implements Serializable {
     protected Integer id;
 
     /** 实体创建时间 */
-    protected LocalDateTime createdDate = LocalDateTime.now();
+    protected LocalDateTime createdDate;
 
     /** 实体更新时间 */
     protected LocalDateTime modifiedDate;
 
     /** 实体删除标记，为false表示删除 */
-    protected Boolean isActive = Boolean.TRUE;
+    protected Boolean isActive;
 }

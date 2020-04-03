@@ -1,5 +1,6 @@
 package com.github.barry.akali.base.utils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -8,11 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -27,9 +31,8 @@ import org.springframework.util.CollectionUtils;
  * 
  * @author barry
  *
- * @param <T>
  */
-public class JpaSearchUtils<T> {
+public class RequestSearchUtils {
 
     /**
      * 取得带相同前缀的Request Parameters, copy from spring WebUtils.
@@ -86,7 +89,7 @@ public class JpaSearchUtils<T> {
      * @return
      */
     public static <T> Specification<T> buildSpec(Map<String, Object> searchParams) {
-        return bySearchFilter(SearchFilter.parse(searchParams).values());
+        return bySearchFilter(SearchFilter.parse(searchParams));
     }
 
     /**
@@ -114,8 +117,8 @@ public class JpaSearchUtils<T> {
                         // 使用原生的java API进行分割，防止过度依赖第三方包
                         String[] names = f.fieldName.split("\\.");
                         Path expression = root.get(names[0]);
-                        for (int i = 1; i < names.length; i++) {
-                            expression = expression.get(names[i]);
+                        if (names.length > 1) {
+                            expression = getSubExpression(names, expression, root);
                         }
                         switch (f.operator) {
                         case EQ:
@@ -148,17 +151,31 @@ public class JpaSearchUtils<T> {
                             break;
                         case IN:
                             // 使用IN的查询构造，需要以数组为Value;
-                            predicates.add(builder.isTrue(expression.in((Object[]) f.value)));
+                            Object[] queryObj = null;
+                            if (f.value instanceof Collection) {
+                                queryObj = (Object[]) ((Collection) f.value).toArray();
+                            } else {
+                                queryObj = (Object[]) f.value;
+                            }
+                            predicates.add(builder.isTrue(expression.in(queryObj)));
                             break;
-                        case BETWEENDATE:
-                            // 使用IN的查询构造，需要以数组为Value;
-                            predicates.add(builder.between(expression, (Date) ((List<Date>) f.value).get(0),
-                                    (Date) ((List<Date>) f.value).get(1)));
-                            break;
-                        case BETWEENLONG:
-                            // 使用IN的查询构造，需要以数组为Value;
-                            predicates.add(builder.between(expression, (Long) ((List<Long>) f.value).get(0),
-                                    (Long) ((List<Long>) f.value).get(1)));
+                        case BETWEEN:
+                            if (f.value instanceof List) {
+                                List c = (List) f.value;
+                                Object param1 = c.get(0);
+                                Object param2 = c.get(1);
+                                if (param1 instanceof Number) {
+                                    predicates.add(builder.between(expression, ((Number) param1).longValue(),
+                                            ((Number) param2).longValue()));
+                                } else if (param1 instanceof Date) {
+                                    predicates.add(builder.between(expression, (Date) param1, (Date) param2));
+                                } else if (param1 instanceof LocalDateTime) {
+                                    predicates.add(builder.between(expression, (LocalDateTime) param1,
+                                            (LocalDateTime) param2));
+                                } else {
+                                    predicates.add(builder.between(expression, param1.toString(), param2.toString()));
+                                }
+                            }
                             break;
                         case ISNULL:
                             predicates.add(builder.isNull(expression));
@@ -174,6 +191,51 @@ public class JpaSearchUtils<T> {
                 // 如果predicates集合大于0，将所有条件用 and 联合起来
                 return predicates.isEmpty() ? builder.conjunction()
                         : builder.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+
+            /**
+             * 无限连接查询构造<br>
+             * 支持属性为List、Set、Map的集合数据
+             * 
+             * @param names      对应实体里面的字段
+             * @param expression
+             * @param root
+             * @return
+             */
+            @SuppressWarnings("rawtypes")
+            private Path getSubExpression(String[] names, Path expression, Root<T> root) {
+                Join join = null;
+                for (int i = 1; i < names.length; i++) {
+                    // 属性为List集合
+                    if (Objects.equals(List.class, expression.getJavaType())) {
+                        if (join == null) {
+                            join = root.joinList(names[i - 1]);
+                        } else {
+                            join = join.joinList(names[i - 1]);
+                        }
+                        expression = join.get(names[i]);
+                    } else if (Objects.equals(Set.class, expression.getJavaType())) {
+                        // 属性为Set集合
+                        if (join == null) {
+                            join = root.joinSet(names[i - 1]);
+                        } else {
+                            join = join.joinSet(names[i - 1]);
+                        }
+                        expression = join.get(names[i]);
+                    } else if (Objects.equals(Map.class, expression.getJavaType())) {
+                        // 属性为Map集合
+                        if (join == null) {
+                            join = root.joinMap(names[i - 1]);
+                        } else {
+                            join = join.joinMap(names[i - 1]);
+                        }
+                        expression = join.get(names[i]);
+                    } else {
+                        // 非属性集合
+                        expression = expression.get(names[i]);
+                    }
+                }
+                return expression;
             }
         };
     }

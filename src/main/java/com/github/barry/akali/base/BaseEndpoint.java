@@ -21,6 +21,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
 
+import com.github.barry.akali.base.dto.BaseResponseDto;
 import com.github.barry.akali.base.utils.IConstants;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,27 +65,28 @@ public abstract class BaseEndpoint implements IConstants, WebBindingInitializer 
      * 统一构造spring data rest的链接
      * 
      * @param controllerClass 控制器class，带有@Controller或@RestController的控制器
-     * @param id 主键字段
+     * @param id              主键字段
      * @return 构造的链接实体
      */
     public Link getSelfLink(Class<?> controllerClass, Integer id) {
 
-        return WebMvcLinkBuilder
-                .linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass)).details(id)).withSelfRel();
+        return WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass)).details(id))
+                .withSelfRel();
     }
 
     /**
      * 统一构造spring data rest 的分页数据信息
-     * @param pageNumber 当前请求搜索的页吗
-     * @param pageSize 当前请求搜索的分页大小
-     * @param sortType 当前请求搜索的分页排序
-     * @param request 当前请求搜索的参数
+     * 
+     * @param pageNumber      当前请求搜索的页吗
+     * @param pageSize        当前请求搜索的分页大小
+     * @param sortType        当前请求搜索的分页排序
+     * @param request         当前请求搜索的参数
      * @param controllerClass 当前请求搜索的控制器类
-     * @param page 当前需要构造分页信息的分页数据
+     * @param page            当前需要构造分页信息的分页数据
      * @return spring data rest 的分页数据信息
      */
     public HttpEntity<PagedModel<EntityModel<?>>> doPage(int pageNumber, int pageSize, String sortType,
-            ServletRequest request, Class<?> controllerClass, Page<? extends BaseEntity> page) {
+            ServletRequest request, Class<?> controllerClass, Page<? extends BaseResponseDto> page) {
 
         List<EntityModel<?>> list = new ArrayList<>();
         page.getContent().forEach(item -> {
@@ -151,8 +153,8 @@ public abstract class BaseEndpoint implements IConstants, WebBindingInitializer 
      * @param request    请求参数
      * @return spring data rest 的分页数据信息
      */
-    protected abstract HttpEntity<PagedModel<EntityModel<?>>> getPageData(int pageNumber, int pageSize,
-            String sortType, ServletRequest request);
+    protected abstract HttpEntity<PagedModel<EntityModel<?>>> getPageData(int pageNumber, int pageSize, String sortType,
+            ServletRequest request);
 
     /**
      * 实体详情接口，交给子类实现
@@ -166,10 +168,10 @@ public abstract class BaseEndpoint implements IConstants, WebBindingInitializer 
      * 构造List列表的spring data rest形式
      * 
      * @param sourcesList     列表数据
-     * @param controllerClass 断点控制器
+     * @param controllerClass 端点控制器
      * @return spring data rest 的集合实体信息
      */
-    public ResponseEntity<?> doListResources(List<? extends BaseEntity> sourcesList, Class<?> controllerClass) {
+    public ResponseEntity<?> doListResources(List<? extends BaseResponseDto> sourcesList, Class<?> controllerClass) {
         List<EntityModel<?>> resList = new ArrayList<>();
         sourcesList.forEach(item -> {
             resList.add(new EntityModel<>(item, getSelfLink(controllerClass, item.getId())));

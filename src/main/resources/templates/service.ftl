@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import com.github.barry.akali.base.BaseService;
 import com.github.barry.akali.base.utils.PageInfo;
 import ${entity.packageName}.${entity.className};
 import ${lastRenderResponse.dto.packageName}.${lastRenderResponse.dto.className};
+import ${lastRenderResponse.response.packageName}.${lastRenderResponse.response.className};
 import ${lastRenderResponse.search.packageName}.${lastRenderResponse.search.className};
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,19 +41,26 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 实体对象
      */
     @Transactional(readOnly = false)
-    public ${entity.className} create(${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
+    public ${lastRenderResponse.response.className} create(${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${entity.className} ${entity.className?uncap_first} = new ${entity.className}();
         super.mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
-        return super.save(${entity.className?uncap_first});
+        ${entity.className?uncap_first} = super.save(${entity.className?uncap_first});
+        ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = new ${lastRenderResponse.response.className}();
+        super.mapper(${entity.className?uncap_first},${entity.className?uncap_first}Resp);
+        return ${entity.className?uncap_first}Resp;
     }
 
     /**
      * 删除实体
      * @param id 实体id
      */
+    @Override
     @Transactional(readOnly = false)
     public void deleteById(${entity.id.className} id) {
-        super.delete(id);
+        super.findById(id).ifPresent(t -> {
+            t.setIsActive(Boolean.FALSE);
+            super.save(t);
+        });
     }
 
     /**
@@ -62,10 +71,13 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 实体对象
      */
     @Transactional(readOnly = false)
-    public ${entity.className} update(${entity.id.className} id, ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
-        ${entity.className} ${entity.className?uncap_first} = details(id);
+    public ${lastRenderResponse.response.className} update(${entity.id.className} id, ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
+        ${entity.className} ${entity.className?uncap_first} = super.findById(id).get();
         super.mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
-        return super.save(${entity.className?uncap_first});
+        ${entity.className?uncap_first} = super.save(${entity.className?uncap_first});
+        ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = new ${lastRenderResponse.response.className}();
+        super.mapper(${entity.className?uncap_first},${entity.className?uncap_first}Resp);
+        return ${entity.className?uncap_first}Resp;
     }
 
     /**
@@ -74,8 +86,11 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @param id 实体id
      * @return 实体对象
      */
-    public ${entity.className} details(${entity.id.className} id) {
-        return super.findOne(id).orElseGet(() -> new ${entity.className}());
+    public ${lastRenderResponse.response.className} details(${entity.id.className} id) {
+        ${entity.className} ${entity.className?uncap_first} = super.findById(id).get();
+        ${lastRenderResponse.response.className} ${lastRenderResponse.response.className?uncap_first} = new ${lastRenderResponse.response.className}();
+        super.mapper(${entity.className?uncap_first},${lastRenderResponse.response.className?uncap_first});
+        return ${lastRenderResponse.response.className?uncap_first};
     }
 
     /**
@@ -85,12 +100,15 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @param pageInfo     分页信息
      * @return 分页列表
      */
-    public Page<${entity.className}> getPageList(Map<String, Object> searchParams, PageInfo pageInfo) {
+    public Page<${lastRenderResponse.response.className}> getPageList(Map<String, Object> searchParams, PageInfo pageInfo) {
         BaseSearchDto searchDto = super.conver(searchParams, ${entity.className}SearchDto.class);
-        Map<String, Object> searchmap = searchDto.getSearchParams();
-        log.debug("${entity.className}的分页搜索的条件是={},排序的字段为={}", searchmap, pageInfo.getSortType());
-        return super.getPage(searchmap, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
+        Map<String, Object> searchMap = searchDto.getSearchParams();
+        log.debug("${entity.className}的分页搜索的条件是={},排序的字段为={}", searchMap, pageInfo.getSortType());
+        Page<${entity.className}> page = super.findPageBySort(searchMap, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
                 pageInfo.getSortType().split(","));
+        Page<${lastRenderResponse.response.className}> respPage = new PageImpl<>(super.mapperList(page.getContent(), ${lastRenderResponse.response.className}.class),
+                page.getPageable(), page.getTotalElements());
+        return respPage;
     }
     
     /**
@@ -99,9 +117,10 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @param searchParams 搜索参数
      * @return 信息列表
      */
-    public List<${entity.className}> findByParams(Map<String, Object> searchParams) {
+    public List<${lastRenderResponse.response.className}> findByParams(Map<String, Object> searchParams) {
         BaseSearchDto searchDto = super.conver(searchParams, ${entity.className}SearchDto.class);
         log.debug("${entity.className}的不分页搜索的参数是={}", searchDto);
-        return super.findAllByMapParams(searchDto.getSearchParams(), Direction.DESC, "id");
+        List<${entity.className}> list = super.findAllBySort(searchDto.getSearchParams(), Direction.DESC, "id");
+        return super.mapperList(list, ${lastRenderResponse.response.className}.class);
     }
 }

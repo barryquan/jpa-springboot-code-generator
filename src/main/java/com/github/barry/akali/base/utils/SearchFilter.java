@@ -1,6 +1,7 @@
 package com.github.barry.akali.base.utils;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ public class SearchFilter {
      *
      */
     public enum Operator {
-        EQ, NE, LIKE, GT, LT, GTE, LTE, IN, NOTIN, ISNULL, ISNOTNULL, BETWEENDATE, BETWEENLONG
+        EQ, NE, LIKE, GT, LT, GTE, LTE, IN, NOTIN, ISNULL, ISNOTNULL, BETWEEN
     }
 
     /**
@@ -70,8 +71,8 @@ public class SearchFilter {
      * @param searchParams 传递进来的搜索map参数
      * @return
      */
-    public static Map<String, SearchFilter> parse(Map<String, Object> searchParams) {
-        Map<String, SearchFilter> filters = new HashMap<>();
+    public static List<SearchFilter> parse(Map<String, Object> searchParams) {
+        List<SearchFilter> filters = new ArrayList<>(searchParams.size());
         searchParams.entrySet().forEach(entry -> {
             String key = entry.getKey();
             Object value = entry.getValue();
@@ -84,7 +85,7 @@ public class SearchFilter {
                 // 获取搜索的字段名
                 String filedName = key.substring(names[0].length() + 1).replaceAll("_", ".");
                 // 创建searchFilter
-                filters.put(key, new SearchFilter(filedName, Operator.valueOf(names[0]), value));
+                filters.add(new SearchFilter(filedName, Operator.valueOf(names[0]), value));
             }
         });
         return filters;

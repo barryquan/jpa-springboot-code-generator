@@ -1,4 +1,4 @@
-package ${packageName};
+package com.github.barry.akali.test.endpoint;
 
 import java.util.List;
 import java.util.Map;
@@ -25,34 +25,34 @@ import com.github.barry.akali.base.BaseEndpoint;
 import com.github.barry.akali.base.utils.PageInfo;
 import com.github.barry.akali.base.utils.RequestSearchUtils;
 import com.github.barry.akali.base.dto.ResponseDto;
-import ${lastRenderResponse.dto.packageName}.${lastRenderResponse.dto.className};
-import ${lastRenderResponse.response.packageName}.${lastRenderResponse.response.className};
-import ${lastRenderResponse.service.packageName}.${lastRenderResponse.service.className};
+import com.github.barry.akali.test.dto.request.UserRequestDto;
+import com.github.barry.akali.test.dto.response.UserResponseDto;
+import com.github.barry.akali.test.service.UserService;
 
 /**
- * controller for ${entity.className}
- * ${comments}
+ * controller for User
+ * 这是类的注释
  *
- * @author ${author}
- * Created On ${date}.
+ * @author quansr
+ * Created On 2020-04-03.
  */
 @RestController
-@RequestMapping("/${entity.className?uncap_first}")
-public class ${className} extends BaseEndpoint {
+@RequestMapping("/user")
+public class UserEndpoint extends BaseEndpoint {
 
     @Autowired
-    private ${lastRenderResponse.service.className} ${lastRenderResponse.service.className?uncap_first};
+    private UserService userService;
 
     /**
      * 新增
      * 
-     * @param ${lastRenderResponse.dto.className?uncap_first}
+     * @param userRequestDto
      * @return
      */
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
-        ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.create(${lastRenderResponse.dto.className?uncap_first});
-        return ResponseEntity.ok(new EntityModel<${lastRenderResponse.response.className}>(${entity.className?uncap_first}Resp, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}Resp.getId())));
+    public ResponseEntity<?> create(@RequestBody UserRequestDto userRequestDto) {
+        UserResponseDto userResp = userService.create(userRequestDto);
+        return ResponseEntity.ok(new EntityModel<UserResponseDto>(userResp, super.getSelfLink(this.getClass(), userResp.getId())));
     }
 
     /**
@@ -62,22 +62,22 @@ public class ${className} extends BaseEndpoint {
      * @return
      */
     @DeleteMapping("/{id}")
-    public ResponseDto<?> delete(@PathVariable ${entity.id.className} id) {
-        ${lastRenderResponse.service.className?uncap_first}.deleteById(id);
+    public ResponseDto<?> delete(@PathVariable Integer id) {
+        userService.deleteById(id);
         return ResponseDto.success(null);
     }
 
     /**
      * 更新
      * 
-     * @param ${lastRenderResponse.dto.className}
+     * @param UserRequestDto
      * @param id
      * @return
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable ${entity.id.className} id,@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
-        ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.update(id,${lastRenderResponse.dto.className?uncap_first});
-        return ResponseEntity.ok(new EntityModel<${lastRenderResponse.response.className}>(${entity.className?uncap_first}Resp, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}Resp.getId())));
+    public ResponseEntity<?> update(@PathVariable Integer id,@RequestBody UserRequestDto userRequestDto) {
+        UserResponseDto userResp = userService.update(id,userRequestDto);
+        return ResponseEntity.ok(new EntityModel<UserResponseDto>(userResp, super.getSelfLink(this.getClass(), userResp.getId())));
     }
 
     /**
@@ -88,9 +88,9 @@ public class ${className} extends BaseEndpoint {
      */
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<?> details(@PathVariable ${entity.id.className} id) {
-        ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.details(id);
-        return ResponseEntity.ok(new EntityModel<${lastRenderResponse.response.className}>(${entity.className?uncap_first}Resp, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}Resp.getId())));
+    public ResponseEntity<?> details(@PathVariable Integer id) {
+        UserResponseDto userResp = userService.details(id);
+        return ResponseEntity.ok(new EntityModel<UserResponseDto>(userResp, super.getSelfLink(this.getClass(), userResp.getId())));
     }
 
     @Override
@@ -102,7 +102,7 @@ public class ${className} extends BaseEndpoint {
         // 获取搜索参数
         Map<String, Object> searchParams = RequestSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
         PageInfo pageInfo = new PageInfo(pageNumber, pageSize, sortType);
-        Page<${lastRenderResponse.response.className}> page = ${lastRenderResponse.service.className?uncap_first}.getPageList(searchParams, pageInfo);
+        Page<UserResponseDto> page = userService.getPageList(searchParams, pageInfo);
         return super.doPage(pageNumber, pageSize, sortType, request, this.getClass(), page);
     }
 
@@ -117,7 +117,7 @@ public class ${className} extends BaseEndpoint {
         // 1.获取搜索参数
         Map<String, Object> searchParams = RequestSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
         // 2.获取数据
-        List<${lastRenderResponse.response.className}> dataList = ${lastRenderResponse.service.className?uncap_first}.findByParams(searchParams);
+        List<UserResponseDto> dataList = userService.findByParams(searchParams);
         return super.doListResources(dataList, this.getClass());
     }
 }

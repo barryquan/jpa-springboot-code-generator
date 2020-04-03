@@ -67,6 +67,7 @@ public class CodeGenerator {
                 .packSuperClazz(GeneratorConstants.DEFAULT_ENTITY_SUPER_CLASS) // 实体需要继承的父类，用来排除不需要加入到实体的字段
                 .registerRender(GeneratorConstants.ENTITY_MODULE) // 注册实体模板
                 .registerRender(GeneratorConstants.DTO_MODULE) // 注册dto的模板
+                .registerRender(GeneratorConstants.RESPONSE_DTO_MODULE) // 注册response的模板
                 .registerRender(GeneratorConstants.SEARCH_MODULE) // 注册搜索的模板
                 .registerRender(GeneratorConstants.REPOSITORY_MODULE) // 注册repository的模板
                 .registerRender(GeneratorConstants.SERVICE_MODULE) // 注册service的模板

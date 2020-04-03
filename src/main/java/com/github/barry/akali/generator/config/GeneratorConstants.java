@@ -83,9 +83,14 @@ public interface GeneratorConstants {
     String ENTITY_MODULE = "entity";
 
     /**
-     * dto的模板前缀
+     * 请求dto的模板前缀
      */
     String DTO_MODULE = "dto";
+    
+    /**
+     * 响应dto的模板前缀
+     */
+    String RESPONSE_DTO_MODULE = "response";
 
     /**
      * 搜索dto的模板前缀
