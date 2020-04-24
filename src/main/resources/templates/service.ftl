@@ -45,9 +45,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
         ${entity.className} ${entity.className?uncap_first} = new ${entity.className}();
         super.mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
         ${entity.className?uncap_first} = super.save(${entity.className?uncap_first});
-        ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = new ${lastRenderResponse.response.className}();
-        super.mapper(${entity.className?uncap_first},${entity.className?uncap_first}Resp);
-        return ${entity.className?uncap_first}Resp;
+        return super.mapperByClass(${entity.className?uncap_first}, ${lastRenderResponse.response.className}.class);
     }
 
     /**
@@ -64,6 +62,16 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
     }
 
     /**
+     * 根据主键集合批量删除
+     * 
+     * @param ids
+     */
+    @Transactional(readOnly = false)
+    public void deleteByIds(List<Integer> ids) {
+        super.deleteAllById(ids);
+    }
+
+    /**
      * 更新实体
      *
      * @param dto 表单
@@ -75,9 +83,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
         ${entity.className} ${entity.className?uncap_first} = super.findById(id).get();
         super.mapper(${entity.className?uncap_first}, ${lastRenderResponse.dto.className?uncap_first});
         ${entity.className?uncap_first} = super.save(${entity.className?uncap_first});
-        ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = new ${lastRenderResponse.response.className}();
-        super.mapper(${entity.className?uncap_first},${entity.className?uncap_first}Resp);
-        return ${entity.className?uncap_first}Resp;
+        return super.mapperByClass(${entity.className?uncap_first}, ${lastRenderResponse.response.className}.class);
     }
 
     /**
@@ -88,9 +94,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      */
     public ${lastRenderResponse.response.className} details(${entity.id.className} id) {
         ${entity.className} ${entity.className?uncap_first} = super.findById(id).get();
-        ${lastRenderResponse.response.className} ${lastRenderResponse.response.className?uncap_first} = new ${lastRenderResponse.response.className}();
-        super.mapper(${entity.className?uncap_first},${lastRenderResponse.response.className?uncap_first});
-        return ${lastRenderResponse.response.className?uncap_first};
+        return super.mapperByClass(${entity.className?uncap_first}, ${lastRenderResponse.response.className}.class);
     }
 
     /**
@@ -110,17 +114,18 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
                 page.getPageable(), page.getTotalElements());
         return respPage;
     }
-    
+
     /**
      * 根据搜索条件搜索所有符合条件的信息列表
      * 
      * @param searchParams 搜索参数
      * @return 信息列表
      */
-    public List<${lastRenderResponse.response.className}> findByParams(Map<String, Object> searchParams) {
+    public List<${lastRenderResponse.response.className}> findByParams(Map<String, Object> searchParams, String sortTypes) {
         BaseSearchDto searchDto = super.conver(searchParams, ${entity.className}SearchDto.class);
         log.debug("${entity.className}的不分页搜索的参数是={}", searchDto);
-        List<${entity.className}> list = super.findAllBySort(searchDto.getSearchParams(), Direction.DESC, "id");
+        List<${entity.className}> list = super.findAllBySort(searchDto.getSearchParams(), Direction.DESC, sortTypes.split(","));
         return super.mapperList(list, ${lastRenderResponse.response.className}.class);
     }
+
 }

@@ -85,6 +85,45 @@ public abstract class BaseService<T, ID extends Serializable> {
         baseRepository.deleteById(id);
     }
 
+    /***
+     * 删除实体
+     * 
+     * @param t 需要删除的实体
+     */
+    @Transactional(readOnly = false)
+    public void deleteById(T t) {
+        baseRepository.delete(t);
+    }
+
+    /***
+     * 根据主键集合删除实体
+     * 
+     * @param ids 主键集合
+     */
+    @Transactional(readOnly = false)
+    public void deleteAllById(List<ID> ids) {
+        List<T> delList = baseRepository.findAllById(ids);
+        this.deleteList(delList);
+    }
+
+    /**
+     * 删除实体集合
+     * 
+     * @param delList
+     */
+    @Transactional(readOnly = false)
+    public void deleteList(List<T> delList) {
+        baseRepository.deleteInBatch(delList);
+    }
+
+    /**
+     * 删除所有实体
+     */
+    @Transactional(readOnly = false)
+    public void deleteAll() {
+        baseRepository.deleteAll();
+    }
+
     /**
      * 统计实体总数
      *
@@ -93,7 +132,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     @Transactional(readOnly = true)
     public long count() {
         List<SearchFilter> sfList = Arrays.asList(new SearchFilter(isActive, Operator.EQ, Boolean.TRUE));
-        return baseRepository.count(RequestSearchUtils.bySearchFilter(sfList));
+        return this.countBySpec(RequestSearchUtils.bySearchFilter(sfList));
     }
 
     /**
@@ -315,6 +354,20 @@ public abstract class BaseService<T, ID extends Serializable> {
     @Transactional(readOnly = true)
     public void mapper(Object source, Object destination) {
         beanMapper.map(source, destination);
+    }
+
+    /**
+     * 克隆对象属性值<br>
+     * 
+     * 
+     * @param <E>
+     * 
+     * @param source 属性来源实体，不能为null
+     * @param clz    属性实体的class类型
+     */
+    @Transactional(readOnly = true)
+    public <E> E mapperByClass(Object source, Class<E> clz) {
+        return beanMapper.map(source, clz);
     }
 
     /**

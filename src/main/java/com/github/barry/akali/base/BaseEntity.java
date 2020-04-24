@@ -17,9 +17,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * 基础实体信息<br>
  * 所有的实体都继承该对象（每个数据表都相同的字段）<br>
@@ -27,8 +24,6 @@ import lombok.Setter;
  * @author barry
  *
  */
-@Setter
-@Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity implements Serializable {
@@ -67,4 +62,53 @@ public abstract class BaseEntity implements Serializable {
 
     /** 实体删除标记，为false表示删除 */
     protected Boolean isActive = Boolean.TRUE;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(LocalDateTime modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
 }

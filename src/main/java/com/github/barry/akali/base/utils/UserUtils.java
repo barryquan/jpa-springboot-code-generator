@@ -1,6 +1,7 @@
 package com.github.barry.akali.base.utils;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 一些操作信息的帮助工具类
@@ -8,18 +9,19 @@ import lombok.extern.slf4j.Slf4j;
  * @author barry
  *
  */
-@Slf4j
-public class UserUtil {
+public class UserUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(UserUtils.class);
 
     /**
-     * 获取当前操作用户
+     * 获取当前登录的用户
      * 
      * @return
      */
     public static String getCurrentUser() {
         String principal = "";
         try {
-//			 principal=SecurityContextHolder.getContext().getAuthentication().getName();
+//            principal = SecurityContextHolder.getContext().getAuthentication().getName();
         } catch (Exception e) {
             log.error("获取spring security的用户失败，原因={}", e.getMessage());
         }

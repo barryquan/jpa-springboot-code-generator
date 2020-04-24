@@ -10,8 +10,7 @@ import lombok.Data;
 /**
  * 渲染请求
  *
- * @author gaochen
- * Created on 2019/6/20.
+ * @author barry
  */
 @Data
 public class RenderingRequest {

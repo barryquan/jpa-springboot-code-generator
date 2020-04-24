@@ -4,10 +4,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 主键
+ * 主键信息
  *
  */
-@EqualsAndHashCode(callSuper = false)
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class IdInfo extends BaseClassInfo {
 }

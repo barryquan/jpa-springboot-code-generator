@@ -7,7 +7,6 @@ import javax.servlet.ServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.barry.akali.base.BaseEndpoint;
-import com.github.barry.akali.base.utils.PageInfo;
-import com.github.barry.akali.base.utils.RequestSearchUtils;
 import com.github.barry.akali.base.dto.ResponseDto;
+import com.github.barry.akali.base.utils.IConstants;
+import com.github.barry.akali.base.utils.PageInfo;
 import ${lastRenderResponse.dto.packageName}.${lastRenderResponse.dto.className};
 import ${lastRenderResponse.response.packageName}.${lastRenderResponse.response.className};
 import ${lastRenderResponse.service.packageName}.${lastRenderResponse.service.className};
@@ -52,18 +51,18 @@ public class ${className} extends BaseEndpoint {
     @PostMapping("")
     public ResponseEntity<?> create(@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.create(${lastRenderResponse.dto.className?uncap_first});
-        return ResponseEntity.ok(new EntityModel<${lastRenderResponse.response.className}>(${entity.className?uncap_first}Resp, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}Resp.getId())));
+        return super.doResource(${entity.className?uncap_first}Resp, this.getClass());
     }
 
     /**
-     * 删除
+     * 根据主键删除，支持批量主键删除
      * 
-     * @param id
+     * @param ids
      * @return
      */
-    @DeleteMapping("/{id}")
-    public ResponseDto<?> delete(@PathVariable ${entity.id.className} id) {
-        ${lastRenderResponse.service.className?uncap_first}.deleteById(id);
+    @DeleteMapping("/{ids}")
+    public ResponseDto<?> delete(@PathVariable List<${entity.id.className}> ids) {
+        ${lastRenderResponse.service.className?uncap_first}.deleteByIds(ids);
         return ResponseDto.success(null);
     }
 
@@ -77,7 +76,7 @@ public class ${className} extends BaseEndpoint {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable ${entity.id.className} id,@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.update(id,${lastRenderResponse.dto.className?uncap_first});
-        return ResponseEntity.ok(new EntityModel<${lastRenderResponse.response.className}>(${entity.className?uncap_first}Resp, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}Resp.getId())));
+        return super.doResource(${entity.className?uncap_first}Resp, this.getClass());
     }
 
     /**
@@ -90,20 +89,21 @@ public class ${className} extends BaseEndpoint {
     @GetMapping("/{id}")
     public ResponseEntity<?> details(@PathVariable ${entity.id.className} id) {
         ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.details(id);
-        return ResponseEntity.ok(new EntityModel<${lastRenderResponse.response.className}>(${entity.className?uncap_first}Resp, super.getSelfLink(this.getClass(), ${entity.className?uncap_first}Resp.getId())));
+        return super.doResource(${entity.className?uncap_first}Resp, this.getClass());
     }
 
     @Override
     @GetMapping("")
-    public HttpEntity<PagedModel<EntityModel<?>>> getPageData(
-            @RequestParam(value = PAGE_NUM, defaultValue = PAGE_NUM_VAL) int pageNumber,
-            @RequestParam(value = PAGE_SIZE, defaultValue = PAGE_SIZE_VAL) int pageSize,
-            @RequestParam(value = SORTTYPE, defaultValue = SORT_TYPE_VAL) String sortType, ServletRequest request) {
+    public HttpEntity<PagedModel<?>> getPageData(
+            @RequestParam(value = IConstants.DEFAULT_PAGE_NUM_FIELD, defaultValue = IConstants.DEFAULT_PAGE_NUM_VAL) int pageNumber,
+            @RequestParam(value = IConstants.DEFAULT_PAGE_SIZE_FIELD, defaultValue = IConstants.DEFAULT_PAGE_SIZE_VAL) int pageSize,
+            @RequestParam(value = IConstants.DEFAULT_SORT_TYPES_FIELD, defaultValue = IConstants.DEFAULT_SORT_TYPE_VAL) String sortTypes,
+            ServletRequest request) {
         // 获取搜索参数
-        Map<String, Object> searchParams = RequestSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
-        PageInfo pageInfo = new PageInfo(pageNumber, pageSize, sortType);
+        Map<String, Object> searchParams = super.getSearchParamStartWith(request, IConstants.EMPTY_SEARCH_PREFIX);
+        PageInfo pageInfo = new PageInfo(pageNumber, pageSize, sortTypes);
         Page<${lastRenderResponse.response.className}> page = ${lastRenderResponse.service.className?uncap_first}.getPageList(searchParams, pageInfo);
-        return super.doPage(pageNumber, pageSize, sortType, request, this.getClass(), page);
+        return super.doPage(pageNumber, pageSize, sortTypes, request, this.getClass(), page);
     }
 
     /**
@@ -113,11 +113,13 @@ public class ${className} extends BaseEndpoint {
      * @return
      */
     @GetMapping("/find/params")
-    public ResponseEntity<?> findByParams(ServletRequest request) {
+    public ResponseEntity<?> findByParams(
+            @RequestParam(value = IConstants.DEFAULT_SORT_TYPES_FIELD, defaultValue = IConstants.DEFAULT_SORT_TYPE_VAL) String sortTypes,
+            ServletRequest request) {
         // 1.获取搜索参数
-        Map<String, Object> searchParams = RequestSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
+        Map<String, Object> searchParams = super.getSearchParamStartWith(request, IConstants.EMPTY_SEARCH_PREFIX);
         // 2.获取数据
-        List<${lastRenderResponse.response.className}> dataList = ${lastRenderResponse.service.className?uncap_first}.findByParams(searchParams);
+        List<${lastRenderResponse.response.className}> dataList = ${lastRenderResponse.service.className?uncap_first}.findByParams(searchParams,sortTypes);
         return super.doListResources(dataList, this.getClass());
     }
 }

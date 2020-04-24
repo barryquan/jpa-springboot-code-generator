@@ -54,54 +54,16 @@ public class DefaultEntityInfoParser extends BaseEntityParser {
                 log.info("字段={} 为静态变量字段，忽略作为传输类的字段", f.getName());
                 continue;
             }
-//            Package packageType = f.getType().getPackage();
-//            boolean javaLangType = packageType == null || "java.lang".equals(packageType.getName());
-//            boolean javaLangType = true;
-//            boolean isId = false;
-//            for (Class<? extends Annotation> idClass : ID_CLASS_LIST) {
-//                boolean hasAnnotation = ReflectUtils.hasAnnotation(f, idClass);
-//                // 跳过主键字段
-//                if (hasAnnotation) {
-//                    isId = true;
-//                    break;
-//                }
-//            }
             fields.add(getFieldInfo(f));
-            // 只解析出基本类型
-//            if (javaLangType && !isId) {
-//                FieldInfo fieldInfo = new FieldInfo();
-//
-//                fieldInfo.setClassName(f.getType().getSimpleName());
-//                fieldInfo.setPackageName(f.getType().getTypeName());
-//
-//                fieldInfo.setName(f.getName());
-//                
-//                
-//
-//                // 字段注解
-//                Annotation[] fieldAnnotations = f.getAnnotations();
-//                if (fieldAnnotations.length > 0) {
-//                    List<AnnotationInfo> annotationInfos = new ArrayList<>();
-//
-//                    for (Annotation annotation : fieldAnnotations) {
-//                        AnnotationInfo annotationInfo = new AnnotationInfo();
-//                        annotationInfo.setClassName(annotation.annotationType().getSimpleName());
-//                        annotationInfo.setPackageName(annotation.annotationType().getPackage().getName());
-//                    }
-//                    fieldInfo.setAnnotations(annotationInfos);
-//                }
-//
-//                fields.add(fieldInfo);
-//            }
         }
-        // try from super class
-//        Class<?> maybeExists = clazz.getSuperclass();
-//        if (!Object.class.equals(maybeExists)) {
-//            fields.addAll(parseField(maybeExists));
-//        }
         return fields;
     }
 
+    /**
+     * 解析字段信息
+     * @param f
+     * @return
+     */
     private FieldInfo getFieldInfo(Field f) {
         FieldInfo fieldInfo = new FieldInfo();
 

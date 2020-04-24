@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import com.github.barry.akali.base.utils.UserUtil;
+import com.github.barry.akali.base.utils.UserUtils;
 
 /**
  * 开启jpa自动填充创建人、创建时间、更新人、更新时间的配置
@@ -29,7 +29,7 @@ public class JpaConfig {
         return new AuditorAware<String>() {
             @Override
             public Optional<String> getCurrentAuditor() {
-                return Optional.ofNullable(UserUtil.getCurrentUser());
+                return Optional.ofNullable(UserUtils.getCurrentUser());
             }
         };
     }

@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
  * 实体信息
  *
  */
-@EqualsAndHashCode(callSuper = false)
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class EntityInfo extends BaseClassInfo {
 
     /**

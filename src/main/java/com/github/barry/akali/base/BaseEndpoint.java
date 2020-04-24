@@ -2,29 +2,39 @@ package com.github.barry.akali.base;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.TreeMap;
 
 import javax.servlet.ServletRequest;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
+import org.springframework.hateoas.server.core.EmbeddedWrapper;
+import org.springframework.hateoas.server.core.EmbeddedWrappers;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.github.barry.akali.base.dto.BaseResponseDto;
 import com.github.barry.akali.base.utils.IConstants;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 基础控制器 其他控制器继承此控制器获得日期字段类型转换和防止XSS攻击的功能
@@ -32,12 +42,19 @@ import lombok.extern.slf4j.Slf4j;
  * @author barry
  * @date 2019年02月01日
  */
-@Slf4j
-public abstract class BaseEndpoint implements IConstants, WebBindingInitializer {
+public abstract class BaseEndpoint implements WebBindingInitializer {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseEndpoint.class);
+
+    /**
+     * 返回的集合或分页为空时的包装，将数据包装成空集合的形式，json格式<br>
+     * {"_embedded":{"resources":[]}}
+     */
+    private final EmbeddedWrappers wrappers = new EmbeddedWrappers(false);
 
     /**
      * web数据绑定，主要是过滤XSS攻击<br>
-     * 该方法只对控制器方法参数为String、Date、Timestamp生效<br>
+     * 该方法只对控制器方法参数为String生效<br>
      * 其他诸如POST、PUT方法的请求体参数无效<br>
      */
     @InitBinder
@@ -62,86 +79,101 @@ public abstract class BaseEndpoint implements IConstants, WebBindingInitializer 
     }
 
     /**
-     * 统一构造spring data rest的链接
-     * 
-     * @param controllerClass 控制器class，带有@Controller或@RestController的控制器
-     * @param id              主键字段
-     * @return 构造的链接实体
-     */
-    public Link getSelfLink(Class<?> controllerClass, Integer id) {
-
-        return WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass)).details(id))
-                .withSelfRel();
-    }
-
-    /**
      * 统一构造spring data rest 的分页数据信息
      * 
      * @param pageNumber      当前请求搜索的页吗
      * @param pageSize        当前请求搜索的分页大小
-     * @param sortType        当前请求搜索的分页排序
+     * @param sortTypes       当前请求搜索的分页排序
      * @param request         当前请求搜索的参数
      * @param controllerClass 当前请求搜索的控制器类
      * @param page            当前需要构造分页信息的分页数据
      * @return spring data rest 的分页数据信息
      */
-    public HttpEntity<PagedModel<EntityModel<?>>> doPage(int pageNumber, int pageSize, String sortType,
-            ServletRequest request, Class<?> controllerClass, Page<? extends BaseResponseDto> page) {
+    public HttpEntity<PagedModel<?>> doPage(int pageNumber, int pageSize, String sortTypes, ServletRequest request,
+            Class<?> controllerClass, Page<? extends BaseResponseDto> page) {
 
-        List<EntityModel<?>> list = new ArrayList<>();
+        List<EntityModel<?>> resList = new ArrayList<>(page.getContent().size());
         page.getContent().forEach(item -> {
-            list.add(new EntityModel<>(item, getSelfLink(controllerClass, item.getId())));
+            resList.add(new EntityModel<>(item, this.getSelfLink(controllerClass, item.getId())));
         });
+        int totalPages = page.getTotalPages();
         // 组装分页信息
-        PageMetadata pageMetadata = new PageMetadata(pageSize, pageNumber, page.getTotalElements(),
-                page.getTotalPages());
+        PageMetadata pageMetadata = new PageMetadata(pageSize, pageNumber, page.getTotalElements(), totalPages);
         // 第一页链接
         Link firstLink = WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass))
-                .getPageData(1, pageSize, sortType, request)).withRel("first");
-        int totalPages = page.getTotalPages();
+                .getPageData(1, pageSize, sortTypes, request)).withRel(IanaLinkRelations.FIRST);
         Link prevLink = null;
         // 大于1时添加上一页链接
         if (pageNumber > 1 && totalPages > pageNumber) {
             prevLink = WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass))
-                    .getPageData(pageNumber - 1, pageSize, sortType, request)).withRel("prev");
+                    .getPageData(pageNumber - 1, pageSize, sortTypes, request)).withRel(IanaLinkRelations.PREV);
         }
         // 本页链接
         Link selfLink = WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass))
-                .getPageData(pageNumber, pageSize, sortType, request)).withSelfRel();
+                .getPageData(pageNumber, pageSize, sortTypes, request)).withSelfRel();
 
         // 当总页数大于当前页数时，才有下一页
         Link nextLink = null;
         if (totalPages > pageNumber) {
             // 下一页链接
             nextLink = WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass))
-                    .getPageData(pageNumber + 1, pageSize, sortType, request)).withRel("next");
+                    .getPageData(pageNumber + 1, pageSize, sortTypes, request)).withRel(IanaLinkRelations.NEXT);
         }
 
         // 最后一页链接
-        Link lastLink = WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass))
-                .getPageData(page.getTotalPages(), pageSize, sortType, request)).withRel("last");
-        PagedModel<EntityModel<?>> pagedResources;
-
-        // 判断是否存在上一页和下一页，返回的参数不能为空，总共存在4种情况
-        if (Objects.nonNull(prevLink)) {
-            if (Objects.nonNull(nextLink)) {
-                pagedResources = new PagedModel<EntityModel<?>>(list, pageMetadata, firstLink, prevLink, selfLink,
-                        nextLink, lastLink);
-            } else {
-                pagedResources = new PagedModel<EntityModel<?>>(list, pageMetadata, firstLink, prevLink, selfLink,
-                        lastLink);
-            }
-
-        } else {
-            if (Objects.nonNull(nextLink)) {
-                pagedResources = new PagedModel<EntityModel<?>>(list, pageMetadata, firstLink, selfLink, nextLink,
-                        lastLink);
-            } else {
-                pagedResources = new PagedModel<EntityModel<?>>(list, pageMetadata, firstLink, selfLink, lastLink);
-            }
-
+        Link lastLink = null;
+        if (totalPages > 1) {
+            lastLink = WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass))
+                    .getPageData(totalPages, pageSize, sortTypes, request)).withRel(IanaLinkRelations.LAST);
         }
-        return new HttpEntity<PagedModel<EntityModel<?>>>(pagedResources);
+
+        PagedModel<?> pagedResources;
+
+        if (CollectionUtils.isEmpty(resList)) {
+            pagedResources = doEmptyPageModel(BaseResponseDto.class, pageMetadata);
+        } else {
+            pagedResources = new PagedModel<>(resList, pageMetadata);
+        }
+        pagedResources.add(firstLink); // 第一页
+        if (Objects.nonNull(prevLink)) {
+            pagedResources.add(prevLink); // 上一页
+        }
+        pagedResources.add(selfLink);// 当前页
+        if (Objects.nonNull(nextLink)) {
+            pagedResources.add(nextLink); // 下一页
+        }
+        if (Objects.nonNull(lastLink)) {
+            pagedResources.add(lastLink); // 最后一页
+        }
+        return new HttpEntity<PagedModel<?>>(pagedResources);
+    }
+
+    /**
+     * 数据为空时构造空的pageModel
+     * 
+     * @param <S>
+     * @param <S>
+     * @param clz          类型
+     * @param pageMetadata 分页信息
+     * @return
+     */
+    protected PagedModel<?> doEmptyPageModel(Class<?> clz, PageMetadata pageMetadata) {
+
+        List<EmbeddedWrapper> embedded = createdEmptyEmbedded(clz);
+        PagedModel<?> pageModel = new PagedModel<>(embedded, pageMetadata);
+        return pageModel;
+    }
+
+    /**
+     * 创建空的实体集合模型
+     * 
+     * @param clz 类型
+     * @return
+     */
+    protected List<EmbeddedWrapper> createdEmptyEmbedded(Class<?> clz) {
+        EmbeddedWrapper wrapper = wrappers.emptyCollectionOf(clz);
+        List<EmbeddedWrapper> embedded = Collections.singletonList(wrapper);
+        return embedded;
     }
 
     /**
@@ -153,7 +185,7 @@ public abstract class BaseEndpoint implements IConstants, WebBindingInitializer 
      * @param request    请求参数
      * @return spring data rest 的分页数据信息
      */
-    protected abstract HttpEntity<PagedModel<EntityModel<?>>> getPageData(int pageNumber, int pageSize, String sortType,
+    protected abstract HttpEntity<PagedModel<?>> getPageData(int pageNumber, int pageSize, String sortType,
             ServletRequest request);
 
     /**
@@ -165,18 +197,85 @@ public abstract class BaseEndpoint implements IConstants, WebBindingInitializer 
     protected abstract ResponseEntity<?> details(Integer id);
 
     /**
+     * 构造单个实体的spring data rest形式
+     * 
+     * @param data            单个实体的数据
+     * @param controllerClass 控制器的类
+     * @return
+     */
+    protected ResponseEntity<?> doResource(BaseResponseDto data, Class<?> controllerClass) {
+        return ResponseEntity.ok(new EntityModel<>(data, this.getSelfLink(controllerClass, data.getId())));
+
+    }
+
+    /**
      * 构造List列表的spring data rest形式
      * 
      * @param sourcesList     列表数据
      * @param controllerClass 端点控制器
      * @return spring data rest 的集合实体信息
      */
-    public ResponseEntity<?> doListResources(List<? extends BaseResponseDto> sourcesList, Class<?> controllerClass) {
-        List<EntityModel<?>> resList = new ArrayList<>();
-        sourcesList.forEach(item -> {
-            resList.add(new EntityModel<>(item, getSelfLink(controllerClass, item.getId())));
-        });
-        return ResponseEntity.ok(new CollectionModel<EntityModel<?>>(resList));
+    protected ResponseEntity<?> doListResources(List<? extends BaseResponseDto> sourcesList, Class<?> controllerClass) {
+        CollectionModel<?> cm;
+        if (CollectionUtils.isEmpty(sourcesList)) {
+            cm = new CollectionModel<>(createdEmptyEmbedded(BaseResponseDto.class), getDefaultSelfLink());
+        } else {
+            List<EntityModel<?>> resList = new ArrayList<>(sourcesList.size());
+            sourcesList.forEach(item -> {
+                resList.add(new EntityModel<>(item, this.getSelfLink(controllerClass, item.getId())));
+            });
+            cm = new CollectionModel<>(resList);
+        }
+
+        return ResponseEntity.ok(cm);
+    }
+
+    /**
+     * 取得带相同前缀的Request Parameters,
+     * 
+     * 返回的结果的Parameter名已去除前缀.
+     */
+    protected Map<String, Object> getSearchParamStartWith(ServletRequest request, String prefix) {
+        prefix = Optional.ofNullable(prefix).orElseGet(() -> IConstants.EMPTY_SEARCH_PREFIX);
+        Map<String, String[]> paramMap = request.getParameterMap();
+        Map<String, Object> params = new TreeMap<>();
+        for (Entry<String, String[]> e : paramMap.entrySet()) {
+            String paramName = e.getKey();
+            if (prefix.length() > 0 && paramName.startsWith(prefix)) {
+                paramName = paramName.substring(prefix.length());
+            }
+            String[] values = e.getValue();
+            if (values == null || values.length == 0) {
+                // Do nothing, no values found at all.
+            } else if (values.length > 1) {
+                params.put(paramName, values);
+            } else {
+                params.put(paramName, StringEscapeUtils.escapeHtml4(values[0]));
+            }
+        }
+        log.debug("请求参数解析后为={},原始参数为={}", params, paramMap);
+        return params;
+    }
+
+    /**
+     * 统一构造spring data rest的链接
+     * 
+     * @param controllerClass 控制器class，带有@Controller或@RestController的控制器
+     * @param id              主键字段
+     * @return 构造的链接实体
+     */
+    protected Link getSelfLink(Class<?> controllerClass, Integer id) {
+        return WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass)).details(id))
+                .withSelfRel();
+    }
+
+    /**
+     * 获取默认的指向详情的链接
+     * 
+     * @return
+     */
+    protected Link getDefaultSelfLink() {
+        return new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString());
     }
 
 }

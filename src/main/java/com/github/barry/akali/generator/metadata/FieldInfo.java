@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
  * 字段信息
  *
  */
-@EqualsAndHashCode(callSuper = false)
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class FieldInfo extends BaseClassInfo {
 
     /**

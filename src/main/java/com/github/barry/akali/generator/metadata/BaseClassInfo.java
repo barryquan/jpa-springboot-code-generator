@@ -10,7 +10,7 @@ import lombok.Data;
 public abstract class BaseClassInfo {
 
     /**
-     * 类名
+     * 类名，如：User
      */
     protected String className;
 

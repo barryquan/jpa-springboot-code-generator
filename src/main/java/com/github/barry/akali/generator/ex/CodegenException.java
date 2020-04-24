@@ -1,8 +1,9 @@
 package com.github.barry.akali.generator.ex;
 
 /**
+ * 代码生成器的异常
  * 
- * @author quansr
+ * @author barry
  *
  */
 public class CodegenException extends RuntimeException {

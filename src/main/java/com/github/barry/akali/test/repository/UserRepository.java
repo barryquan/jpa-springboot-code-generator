@@ -11,7 +11,7 @@ import com.github.barry.akali.entity.User;
  * 这是类的注释
  *
  * @author quansr
- * Created On 2020-04-03.
+ * Created On 2020-04-23.
  */
 @RepositoryRestResource(path = "user", itemResourceRel = "resource", collectionResourceRel = "resources")
 public interface UserRepository extends BaseRepository<User, Integer> {

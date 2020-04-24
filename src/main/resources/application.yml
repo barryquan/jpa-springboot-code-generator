@@ -32,7 +32,7 @@ akali:
   entity:
     package: com.github.barry.akali.test.entity
     template: entity.ftl
-    suffix: Entity
+    suffix: 
     id:
       class: Integer
       package: 

@@ -4,31 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * 搜索参数的基类
  * 
  * @author quansr
  *
  */
-@Setter
-@Getter
 public abstract class BaseSearchDto {
-
-    /**
-     * 开始时间，格式：yyyy-MM-dd<br>
-     * 构造时间参数时格式：yyyy-MM-dd HH:mm:SS 需要补上结束的时分秒，如：2019-12-12 00:00:00
-     */
-    private String startDate;
-
-    /**
-     * 结束时间，格式：yyyy-MM-dd<br>
-     * 构造时间参数时格式：yyyy-MM-dd HH:mm:SS<br>
-     * 需要补上结束的时分秒，如：2019-12-12 23:59:59
-     */
-    private String endDate;
 
     /**
      * 获取查询条件与值
@@ -52,7 +34,8 @@ public abstract class BaseSearchDto {
 
     /**
      * 查询的值不为空才放入集合中
-     * @param key 查询的key，如：LIKE_name
+     * 
+     * @param key   查询的key，如：LIKE_name
      * @param value 对应的值，不为空，如：123
      * @param map
      */

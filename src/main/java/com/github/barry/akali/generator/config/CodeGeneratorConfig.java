@@ -93,7 +93,7 @@ public class CodeGeneratorConfig {
     private boolean useDb;
 
     /**
-     * 数据库的连接配置
+     * 数据库的连接配置,useDb=true才有用
      */
     private DataBaseProperties dbProperties = new DataBaseProperties();
 }

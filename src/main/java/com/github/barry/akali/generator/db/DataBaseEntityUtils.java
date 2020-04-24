@@ -15,9 +15,9 @@ import com.github.barry.akali.generator.metadata.FieldInfo;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 数据库实体字段隐射帮助类
+ * 数据库实体字段映射工具类
  * 
- * @author quansr
+ * @author barry
  *
  */
 @Slf4j
@@ -150,7 +150,7 @@ public class DataBaseEntityUtils {
             }
         } catch (SQLException e1) {
 
-            e1.printStackTrace();
+            log.error("获取数据库表出错，原因={}", e1.getMessage(), e1);
         }
 
     }
@@ -176,26 +176,29 @@ public class DataBaseEntityUtils {
     }
 
     /**
-     * 替换字符串并让它的下一个字母为大写
+     * 替换字符串并让它的下一个字母为大写<br>
+     * 如：srcStr=abc_dfg,oldStr=_,newStr="@"<br>
+     * 则替换后的字符串为：abc@Dfg
      * 
      * @param srcStr 源字符串
-     * @param org    需要被替换的字符串
-     * @param ob     替换的字符串
+     * @param oldStr 需要被替换的字符串
+     * @param newStr 替换的字符串
      * @return
      */
-    public static String replaceUnderlineAndfirstToUpper(String srcStr, String org, String ob) {
-        String newString = "";
+    public static String replaceUnderlineAndfirstToUpper(String srcStr, String oldStr, String newStr) {
+        StringBuilder builder = new StringBuilder();
         int first = 0;
-        while (srcStr.indexOf(org) != -1) {
-            first = srcStr.indexOf(org);
+        while (srcStr.indexOf(oldStr) != -1) {
+            first = srcStr.indexOf(oldStr);
             if (first != srcStr.length()) {
-                newString = newString + srcStr.substring(0, first) + ob;
-                srcStr = srcStr.substring(first + org.length(), srcStr.length());
+                builder.append(srcStr.substring(0, first));
+                builder.append(newStr);
+                srcStr = srcStr.substring(first + oldStr.length(), srcStr.length());
                 srcStr = firstCharacterToUpper(srcStr);
             }
         }
-        newString = newString + srcStr;
-        return newString;
+        builder.append(srcStr);
+        return builder.toString();
     }
 
     /**
@@ -207,7 +210,6 @@ public class DataBaseEntityUtils {
     public static String firstCharacterToUpper(String srcStr) {
         char[] cs = srcStr.toCharArray();
         cs[0] -= 32;
-
         return String.valueOf(cs);
     }
 

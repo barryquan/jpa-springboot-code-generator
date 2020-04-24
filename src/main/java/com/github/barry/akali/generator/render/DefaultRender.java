@@ -17,13 +17,19 @@ import com.github.barry.akali.generator.metadata.EntityInfo;
 import com.github.barry.akali.generator.metadata.FieldInfo;
 import com.github.barry.akali.generator.utils.FreeMarkerUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 默认的模板引擎渲染实现类
  * 
  * 
  */
+@Slf4j
 public class DefaultRender implements IRender {
 
+    /**
+     * 代码生成的配置
+     */
     private final CodeGeneratorConfig config;
 
     private Map<String, RenderingResponse> lastRenderingResponseMap = new HashMap<>();
@@ -72,9 +78,17 @@ public class DefaultRender implements IRender {
         RenderingResponse lastRenderingResponse = FreeMarkerUtils.process(renderingRequest);
 
         lastRenderingResponseMap.put(module, lastRenderingResponse);
+        log.info("render module is {}, response is {}", module, lastRenderingResponse);
+        log.info("lastRenderingResponseMap is {}", lastRenderingResponseMap);
         return lastRenderingResponse;
     }
 
+    /**
+     * 过滤不需要模板导入的包
+     * 
+     * @param entityInfo
+     * @return
+     */
     private Set<String> checkImports(EntityInfo entityInfo) {
         Set<String> imports = new HashSet<>();
         List<FieldInfo> fielList = entityInfo.getFields();

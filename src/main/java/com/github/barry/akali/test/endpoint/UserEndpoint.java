@@ -7,7 +7,6 @@ import javax.servlet.ServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.barry.akali.base.BaseEndpoint;
-import com.github.barry.akali.base.utils.PageInfo;
-import com.github.barry.akali.base.utils.RequestSearchUtils;
 import com.github.barry.akali.base.dto.ResponseDto;
+import com.github.barry.akali.base.utils.IConstants;
+import com.github.barry.akali.base.utils.PageInfo;
 import com.github.barry.akali.test.dto.request.UserRequestDto;
 import com.github.barry.akali.test.dto.response.UserResponseDto;
 import com.github.barry.akali.test.service.UserService;
@@ -34,7 +33,7 @@ import com.github.barry.akali.test.service.UserService;
  * 这是类的注释
  *
  * @author quansr
- * Created On 2020-04-03.
+ * Created On 2020-04-23.
  */
 @RestController
 @RequestMapping("/user")
@@ -52,18 +51,18 @@ public class UserEndpoint extends BaseEndpoint {
     @PostMapping("")
     public ResponseEntity<?> create(@RequestBody UserRequestDto userRequestDto) {
         UserResponseDto userResp = userService.create(userRequestDto);
-        return ResponseEntity.ok(new EntityModel<UserResponseDto>(userResp, super.getSelfLink(this.getClass(), userResp.getId())));
+        return super.doResource(userResp, this.getClass());
     }
 
     /**
-     * 删除
+     * 根据主键删除，支持批量主键删除
      * 
-     * @param id
+     * @param ids
      * @return
      */
-    @DeleteMapping("/{id}")
-    public ResponseDto<?> delete(@PathVariable Integer id) {
-        userService.deleteById(id);
+    @DeleteMapping("/{ids}")
+    public ResponseDto<?> delete(@PathVariable List<Integer> ids) {
+        userService.deleteByIds(ids);
         return ResponseDto.success(null);
     }
 
@@ -77,7 +76,7 @@ public class UserEndpoint extends BaseEndpoint {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id,@RequestBody UserRequestDto userRequestDto) {
         UserResponseDto userResp = userService.update(id,userRequestDto);
-        return ResponseEntity.ok(new EntityModel<UserResponseDto>(userResp, super.getSelfLink(this.getClass(), userResp.getId())));
+        return super.doResource(userResp, this.getClass());
     }
 
     /**
@@ -90,20 +89,21 @@ public class UserEndpoint extends BaseEndpoint {
     @GetMapping("/{id}")
     public ResponseEntity<?> details(@PathVariable Integer id) {
         UserResponseDto userResp = userService.details(id);
-        return ResponseEntity.ok(new EntityModel<UserResponseDto>(userResp, super.getSelfLink(this.getClass(), userResp.getId())));
+        return super.doResource(userResp, this.getClass());
     }
 
     @Override
     @GetMapping("")
-    public HttpEntity<PagedModel<EntityModel<?>>> getPageData(
-            @RequestParam(value = PAGE_NUM, defaultValue = PAGE_NUM_VAL) int pageNumber,
-            @RequestParam(value = PAGE_SIZE, defaultValue = PAGE_SIZE_VAL) int pageSize,
-            @RequestParam(value = SORTTYPE, defaultValue = SORT_TYPE_VAL) String sortType, ServletRequest request) {
+    public HttpEntity<PagedModel<?>> getPageData(
+            @RequestParam(value = IConstants.DEFAULT_PAGE_NUM_FIELD, defaultValue = IConstants.DEFAULT_PAGE_NUM_VAL) int pageNumber,
+            @RequestParam(value = IConstants.DEFAULT_PAGE_SIZE_FIELD, defaultValue = IConstants.DEFAULT_PAGE_SIZE_VAL) int pageSize,
+            @RequestParam(value = IConstants.DEFAULT_SORT_TYPES_FIELD, defaultValue = IConstants.DEFAULT_SORT_TYPE_VAL) String sortTypes,
+            ServletRequest request) {
         // 获取搜索参数
-        Map<String, Object> searchParams = RequestSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
-        PageInfo pageInfo = new PageInfo(pageNumber, pageSize, sortType);
+        Map<String, Object> searchParams = super.getSearchParamStartWith(request, IConstants.EMPTY_SEARCH_PREFIX);
+        PageInfo pageInfo = new PageInfo(pageNumber, pageSize, sortTypes);
         Page<UserResponseDto> page = userService.getPageList(searchParams, pageInfo);
-        return super.doPage(pageNumber, pageSize, sortType, request, this.getClass(), page);
+        return super.doPage(pageNumber, pageSize, sortTypes, request, this.getClass(), page);
     }
 
     /**
@@ -113,11 +113,13 @@ public class UserEndpoint extends BaseEndpoint {
      * @return
      */
     @GetMapping("/find/params")
-    public ResponseEntity<?> findByParams(ServletRequest request) {
+    public ResponseEntity<?> findByParams(
+            @RequestParam(value = IConstants.DEFAULT_SORT_TYPES_FIELD, defaultValue = IConstants.DEFAULT_SORT_TYPE_VAL) String sortTypes,
+            ServletRequest request) {
         // 1.获取搜索参数
-        Map<String, Object> searchParams = RequestSearchUtils.getParamStartWith(request, SEARCH_PREFIX1);
+        Map<String, Object> searchParams = super.getSearchParamStartWith(request, IConstants.EMPTY_SEARCH_PREFIX);
         // 2.获取数据
-        List<UserResponseDto> dataList = userService.findByParams(searchParams);
+        List<UserResponseDto> dataList = userService.findByParams(searchParams,sortTypes);
         return super.doListResources(dataList, this.getClass());
     }
 }

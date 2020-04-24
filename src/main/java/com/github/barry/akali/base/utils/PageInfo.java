@@ -15,7 +15,7 @@ public class PageInfo {
     private int size;
 
     /** 排序类型,默认按照主键id排序 */
-    private String sortType = "id";
+    private String sortType = IConstants.DEFAULT_SORT_TYPE_VAL;
 
     public int getNumber() {
         return number;

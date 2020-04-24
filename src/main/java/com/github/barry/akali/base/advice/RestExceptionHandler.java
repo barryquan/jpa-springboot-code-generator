@@ -5,6 +5,8 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -18,17 +20,16 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import com.github.barry.akali.base.dto.ResponseDto;
 import com.github.barry.akali.base.utils.IConstants;
 
-import lombok.extern.slf4j.Slf4j;
-
 /***
  * 统一封装异常、统一处理出参
  * 
  * @author barry
  *
  */
-@Slf4j
 @RestControllerAdvice
 public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
+
+    private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     @Value("${spring.application.name:}")
     private String serviceName;

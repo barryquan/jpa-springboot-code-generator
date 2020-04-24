@@ -1,12 +1,5 @@
 package com.github.barry.akali.entity;
 
-/**
- * 请输入类的介绍信息
- * @author quansr
- * @date 创建时间：2019年12月13日 下午2:03:45
- * @version 1.0
- */
-
 import javax.persistence.Entity;
 
 import com.github.barry.akali.base.BaseEntity;
@@ -15,10 +8,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+/**
+ * 用户数据库实体
+ * 
+ * @author quansr
+ * @date 创建时间：2019年12月13日 下午2:03:45
+ * @version 1.0
+ */
 @Data
 @Entity
-@EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 public class User extends BaseEntity {
 
     /**

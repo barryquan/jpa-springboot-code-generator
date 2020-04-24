@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * 这是类的注释
  *
  * @author quansr
- * Created On 2020-04-03.
+ * Created On 2020-04-23.
  */
 @Slf4j
 @Service
@@ -45,9 +45,7 @@ public class UserService extends BaseService<User, Integer> {
         User user = new User();
         super.mapper(user, userRequestDto);
         user = super.save(user);
-        UserResponseDto userResp = new UserResponseDto();
-        super.mapper(user,userResp);
-        return userResp;
+        return super.mapperByClass(user, UserResponseDto.class);
     }
 
     /**
@@ -64,6 +62,16 @@ public class UserService extends BaseService<User, Integer> {
     }
 
     /**
+     * 根据主键集合批量删除
+     * 
+     * @param ids
+     */
+    @Transactional(readOnly = false)
+    public void deleteByIds(List<Integer> ids) {
+        super.deleteAllById(ids);
+    }
+
+    /**
      * 更新实体
      *
      * @param dto 表单
@@ -75,9 +83,7 @@ public class UserService extends BaseService<User, Integer> {
         User user = super.findById(id).get();
         super.mapper(user, userRequestDto);
         user = super.save(user);
-        UserResponseDto userResp = new UserResponseDto();
-        super.mapper(user,userResp);
-        return userResp;
+        return super.mapperByClass(user, UserResponseDto.class);
     }
 
     /**
@@ -88,9 +94,7 @@ public class UserService extends BaseService<User, Integer> {
      */
     public UserResponseDto details(Integer id) {
         User user = super.findById(id).get();
-        UserResponseDto userResponseDto = new UserResponseDto();
-        super.mapper(user,userResponseDto);
-        return userResponseDto;
+        return super.mapperByClass(user, UserResponseDto.class);
     }
 
     /**
@@ -110,17 +114,18 @@ public class UserService extends BaseService<User, Integer> {
                 page.getPageable(), page.getTotalElements());
         return respPage;
     }
-    
+
     /**
      * 根据搜索条件搜索所有符合条件的信息列表
      * 
      * @param searchParams 搜索参数
      * @return 信息列表
      */
-    public List<UserResponseDto> findByParams(Map<String, Object> searchParams) {
+    public List<UserResponseDto> findByParams(Map<String, Object> searchParams, String sortTypes) {
         BaseSearchDto searchDto = super.conver(searchParams, UserSearchDto.class);
         log.debug("User的不分页搜索的参数是={}", searchDto);
-        List<User> list = super.findAllBySort(searchDto.getSearchParams(), Direction.DESC, "id");
+        List<User> list = super.findAllBySort(searchDto.getSearchParams(), Direction.DESC, sortTypes.split(","));
         return super.mapperList(list, UserResponseDto.class);
     }
+
 }

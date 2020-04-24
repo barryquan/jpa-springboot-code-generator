@@ -32,7 +32,8 @@ public class FreeMarkerUtils {
 
     static {
         configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
-        configuration.setObjectWrapper(Configuration.getDefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
+        configuration.setObjectWrapper(
+                Configuration.getDefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
         configuration.setDefaultEncoding("UTF-8");
     }
 
@@ -53,7 +54,8 @@ public class FreeMarkerUtils {
             template.process(renderingRequest, writer);
             return writer.toString();
         } catch (TemplateException | IOException e) {
-            throw new CodegenException(String.format("render %s code source error.", renderingRequest.getEntity().getClassName()), e);
+            throw new CodegenException(
+                    String.format("render %s code source error.", renderingRequest.getEntity().getClassName()), e);
         }
     }
 
@@ -68,15 +70,16 @@ public class FreeMarkerUtils {
         response.setClassName(renderingRequest.getClassName());
         response.setPackageName(renderingRequest.getPackageName());
         response.setFtlName(renderingRequest.getFtlName());
-
         String code = render(renderingRequest);
         try {
             if (code != null) {
-                saveToFile(code, renderingRequest.getSavePath(), renderingRequest.getClassName() + ".java", renderingRequest.isCover());
+                saveToFile(code, renderingRequest.getSavePath(), renderingRequest.getClassName() + ".java",
+                        renderingRequest.isCover());
             }
             response.setSuccess(true);
         } catch (IOException e) {
-            throw new CodegenException(String.format("render %s code source failed.", renderingRequest.getEntity().getClassName()), e);
+            throw new CodegenException(
+                    String.format("render %s code source failed.", renderingRequest.getEntity().getClassName()), e);
         }
         return response;
     }
@@ -103,7 +106,7 @@ public class FreeMarkerUtils {
         Files.createFile(path);
         Files.write(path, code.getBytes());
 
-        //log.debug("path: {}, code: {}", path, code);
+        log.info("file path: {}", path);
     }
 
 }

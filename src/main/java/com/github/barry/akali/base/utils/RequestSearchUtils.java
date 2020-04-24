@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -20,9 +18,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.servlet.ServletRequest;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 
@@ -35,30 +31,19 @@ import org.springframework.util.CollectionUtils;
 public class RequestSearchUtils {
 
     /**
-     * 取得带相同前缀的Request Parameters, copy from spring WebUtils.
-     * 
-     * 返回的结果的Parameter名已去除前缀.
+     * 空字符串
      */
-    public static Map<String, Object> getParamStartWith(ServletRequest request, String prefix) {
-        Enumeration<String> paramNames = request.getParameterNames();
-        Map<String, Object> params = new TreeMap<String, Object>();
-        prefix = Optional.ofNullable(prefix).orElseGet(() -> "");
-        while (paramNames != null && paramNames.hasMoreElements()) {
-            String paramName = paramNames.nextElement();
-            if ("".equals(prefix) || paramName.startsWith(prefix)) {
-                String unprefixed = paramName.substring(prefix.length());
-                String[] values = request.getParameterValues(paramName);
-                if (values == null || values.length == 0) {
-                    // Do nothing, no values found at all.
-                } else if (values.length > 1) {
-                    params.put(unprefixed, values);
-                } else {
-                    params.put(unprefixed, StringEscapeUtils.escapeHtml4(values[0]));
-                }
-            }
-        }
-        return params;
-    }
+    private static final String NULL_STRING = "";
+
+    /**
+     * 百分号的字符串
+     */
+    private static final String PERCENT_STRING = "%";
+
+    /**
+     * 英文下的"."字符串，需要转义
+     */
+    private static final String POINT_STRING = "\\.";
 
     /**
      * 组合Parameters生成Query String的Parameter部分, 并在paramter name上加上prefix.
@@ -67,9 +52,9 @@ public class RequestSearchUtils {
      */
     public static String enParamStrWithPrefix(Map<String, Object> params, String prefix) {
         if (params == null || params.isEmpty()) {
-            return "";
+            return NULL_STRING;
         }
-        prefix = Optional.ofNullable(prefix).orElseGet(() -> "");
+        prefix = Optional.ofNullable(prefix).orElseGet(() -> NULL_STRING);
         StringBuilder queryStringBuilder = new StringBuilder();
         Iterator<Entry<String, Object>> it = params.entrySet().iterator();
         while (it.hasNext()) {
@@ -89,7 +74,7 @@ public class RequestSearchUtils {
      * @return
      */
     public static <T> Specification<T> buildSpec(Map<String, Object> searchParams) {
-        return bySearchFilter(SearchFilter.parse(searchParams));
+        return RequestSearchUtils.bySearchFilter(SearchFilter.parse(searchParams));
     }
 
     /**
@@ -115,7 +100,7 @@ public class RequestSearchUtils {
                     // 保存查询条件集
                     filters.forEach(f -> {
                         // 使用原生的java API进行分割，防止过度依赖第三方包
-                        String[] names = f.fieldName.split("\\.");
+                        String[] names = f.fieldName.split(POINT_STRING);
                         Path expression = root.get(names[0]);
                         if (names.length > 1) {
                             expression = getSubExpression(names, expression, root);
@@ -131,7 +116,14 @@ public class RequestSearchUtils {
                             break;
                         case LIKE:
                             // 模糊查询构造
-                            predicates.add(builder.like(expression, "%" + f.value + "%"));
+                            String likeValue = f.value.toString();
+                            if (!likeValue.startsWith(PERCENT_STRING)) {
+                                likeValue = likeValue.concat(PERCENT_STRING);
+                            }
+                            if (!likeValue.endsWith(PERCENT_STRING)) {
+                                likeValue = likeValue.concat(PERCENT_STRING);
+                            }
+                            predicates.add(builder.like(expression, likeValue));
                             break;
                         case GT:
                             // 大于查询构造

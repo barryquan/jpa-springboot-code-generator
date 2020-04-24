@@ -20,10 +20,10 @@ public interface IConstants {
 
     // -------------------日期格式 START-----------------------
     /** 精确到分钟的时间格式 */
-    String DATETIME_FORMAT = "yyyy-MM-dd HH:mm";
+    String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 
     /** 精确到秒的时间格式 */
-    String DATETIME_MS_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    String DATE_TIME_MS_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** 精确到天的时间格式 */
     String DATE_FORMAT = "yyyy-MM-dd";
@@ -32,43 +32,38 @@ public interface IConstants {
     String TIME_FORMAT = "HH:mm:ss";
 
     /** 时间格式数组 */
-    String[] FORMAT_PATTERNS = { DATETIME_FORMAT, DATE_FORMAT, TIME_FORMAT };
+    String[] DATE_FORMAT_PATTERNS = { DATE_TIME_FORMAT, DATE_FORMAT, TIME_FORMAT };
     // -------------------日期格式 END-----------------------
 
     // -------------------分页参数封装 START-----------------------
 
-    /** 页面View相关输入输出常量名 */
-    String PAGE_NUM = "number";
+    /** 分页请求的页码字段 */
+    String DEFAULT_PAGE_NUM_FIELD = "number";
 
-    /** 页面View相关输入输出常量名 */
-    String PAGE_SIZE = "size";
+    /** 分页请求的分页大小字段 */
+    String DEFAULT_PAGE_SIZE_FIELD = "size";
 
-    /** 页面View相关输入输出常量名 */
-    String PAGELIST = "list";
+    /**
+     * 分页请求的排序字段<br>
+     * 如：sortTypes=id,name 则生成sql后的排序顺序为：order by id,name desc
+     */
+    String DEFAULT_SORT_TYPES_FIELD = "sortTypes";
 
-    /** 页面View相关输入输出常量名 */
-    String SORTTYPES = "sortTypes";
+    /**
+     * 分页请求的默认排序字段为主键排序
+     */
+    String DEFAULT_SORT_TYPE_VAL = "id";
 
-    String SORT_TYPE_VAL = "id";
+    /** 默认的数据分页大小 */
+    String DEFAULT_PAGE_SIZE_VAL = "10";
+    /** 默认的分页的页码 */
+    String DEFAULT_PAGE_NUM_VAL = "1";
 
-    /** 页面View相关输入输出常量名 */
-    String SORTTYPE = "sortType";
-
-    /** 页面View相关输入输出常量名 */
-    String SEARCHPARAMS = "searchParams";
-
-    /** 页面尺寸 */
-    String PAGE_SIZE_VAL = "12";
-    /** 默认首页 */
-    String PAGE_NUM_VAL = "1";
-    /** 搜索排序默认类型 */
-    String AUTO = "auto";
-    /** 搜索排序默认类型 */
-    String AUTO_STR = "自动";
     /** 搜索默认前缀 */
     String SEARCH_PREFIX = "search_";
-    /** 搜索默认前缀 */
-    String SEARCH_PREFIX1 = "";
+
+    /** 空的搜索默认前缀 */
+    String EMPTY_SEARCH_PREFIX = "";
 
     // -------------------分页参数封装 END-----------------------
 

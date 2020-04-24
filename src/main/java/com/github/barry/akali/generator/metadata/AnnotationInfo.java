@@ -7,7 +7,9 @@ import lombok.EqualsAndHashCode;
  * 注解信息
  *
  */
-@EqualsAndHashCode(callSuper = false)
+
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class AnnotationInfo extends BaseClassInfo {
+
 }

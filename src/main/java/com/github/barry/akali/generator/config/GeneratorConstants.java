@@ -75,6 +75,9 @@ public interface GeneratorConstants {
      */
     String TEMPLATE_DIR = APP_DEFAULT_CONFIG_PREFIX + "template.dir";
 
+    /**
+     * 默认的模板所在路径
+     */
     String DEFAULT_TEMPLATE_DIR = SRC_PATH_PREFIX + "resources/templates/";
 
     /**
@@ -86,7 +89,7 @@ public interface GeneratorConstants {
      * 请求dto的模板前缀
      */
     String DTO_MODULE = "dto";
-    
+
     /**
      * 响应dto的模板前缀
      */

@@ -1,8 +1,6 @@
 package com.github.barry.akali.base.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
 /**
  * 响应基础Dto信息<br>
@@ -11,9 +9,7 @@ import lombok.ToString;
  * @author barry
  *
  */
-@Setter
-@Getter
-@ToString(callSuper = true)
+@Relation(collectionRelation = "resources")
 public abstract class BaseResponseDto extends BaseDto {
 
     /**
