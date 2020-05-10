@@ -58,7 +58,7 @@ public abstract class BaseEntity implements Serializable {
     /** 实体更新时间 */
     @LastModifiedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    protected LocalDateTime modifiedDate;
+    protected LocalDateTime lastModifiedDate;
 
     /** 实体删除标记，为false表示删除 */
     protected Boolean isActive = Boolean.TRUE;
@@ -95,12 +95,12 @@ public abstract class BaseEntity implements Serializable {
         this.lastModifiedBy = lastModifiedBy;
     }
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    public LocalDateTime getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
-    public void setModifiedDate(LocalDateTime modifiedDate) {
-        this.modifiedDate = modifiedDate;
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     public Boolean getIsActive() {
