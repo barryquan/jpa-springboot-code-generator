@@ -146,7 +146,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public long countByParam(String param, Operator operator, Object object) {
-        List<SearchFilter> sfList = doOneSearchFilter(param, operator, object);
+        List<SearchFilter> sfList = this.doDefaultSearchFilter(param, operator, object);
         return this.countBySpec(RequestSearchUtils.bySearchFilter(sfList));
     }
 
@@ -194,7 +194,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public Optional<T> findOneByParam(String param, Operator operator, Object object) {
-        List<SearchFilter> sfList = doOneSearchFilter(param, operator, object);
+        List<SearchFilter> sfList = this.doDefaultSearchFilter(param, operator, object);
         return this.findOneBySpec(RequestSearchUtils.bySearchFilter(sfList));
     }
 
@@ -245,7 +245,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public List<T> findAllByParam(String param, Operator operator, Object object) {
-        List<SearchFilter> sfList = doOneSearchFilter(param, operator, object);
+        List<SearchFilter> sfList = this.doDefaultSearchFilter(param, operator, object);
         return this.findAllBySpec(RequestSearchUtils.bySearchFilter(sfList));
     }
 
@@ -332,14 +332,14 @@ public abstract class BaseService<T, ID extends Serializable> {
     }
 
     /**
-     * 统一构造单个查询条件的<code>SearchFilter</code>集合
+     * 统一构造默认查询条件的<code>SearchFilter</code>集合
      * 
      * @param param    实体的搜索字段，字段必须在实体中存在
      * @param operator 搜索查询的方式
      * @param object   搜索查询的值
      * @return 搜索参数集合
      */
-    protected List<SearchFilter> doOneSearchFilter(String param, Operator operator, Object object) {
+    protected List<SearchFilter> doDefaultSearchFilter(String param, Operator operator, Object object) {
         return Arrays.asList(new SearchFilter(param, operator, object),
                 new SearchFilter(isActive, Operator.EQ, Boolean.TRUE));
     }

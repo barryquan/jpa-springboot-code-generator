@@ -223,7 +223,7 @@ public class RequestSearchUtils {
                         }
                         expression = join.get(names[i]);
                     } else {
-                        // 非属性集合
+                        // 非集合属性
                         expression = expression.get(names[i]);
                     }
                 }

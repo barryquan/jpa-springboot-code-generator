@@ -253,7 +253,7 @@ public abstract class BaseEndpoint implements WebBindingInitializer {
                 params.put(paramName, StringEscapeUtils.escapeHtml4(values[0]));
             }
         }
-        log.debug("请求参数解析后为={},原始参数为={}", params, paramMap);
+        log.debug("请求参数解析后为=[{}],原始参数为=[{}]", params, paramMap);
         return params;
     }
 

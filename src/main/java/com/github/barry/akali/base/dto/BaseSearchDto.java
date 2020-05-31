@@ -1,8 +1,11 @@
 package com.github.barry.akali.base.dto;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * 搜索参数的基类
@@ -33,14 +36,27 @@ public abstract class BaseSearchDto {
     protected abstract void buildSearchParams(Map<String, Object> map);
 
     /**
-     * 查询的值不为空才放入集合中
+     * 查询的值不为空才放入集合中<br>
+     * 1.如果时字符串，字符串必须不为空<br>
+     * 2.如果是List集合类型，集合必须不为空<br>
+     * 3.其他情况，value != null<br>
      * 
      * @param key   查询的key，如：LIKE_name
      * @param value 对应的值，不为空，如：123
      * @param map
      */
     public void putNoNull(String key, Object value, Map<String, Object> map) {
-        Optional.ofNullable(value).ifPresent(a -> map.put(key, a));
+        boolean isCanSearch = true;
+        if (value instanceof String) {
+            isCanSearch = StringUtils.hasText(value.toString());
+        } else if (value instanceof Collection) {
+            isCanSearch = !CollectionUtils.isEmpty((Collection<?>) value);
+        } else {
+            isCanSearch = (value != null);
+        }
+        if (isCanSearch) {
+            map.put(key, value);
+        }
     }
 
 }

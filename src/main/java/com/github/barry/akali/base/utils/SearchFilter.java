@@ -1,9 +1,13 @@
 package com.github.barry.akali.base.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * 构造spring JPA的搜索条件
@@ -84,8 +88,18 @@ public class SearchFilter {
                 }
                 // 获取搜索的字段名
                 String filedName = key.substring(names[0].length() + 1).replaceAll("_", ".");
-                // 创建searchFilter
-                filters.add(new SearchFilter(filedName, Operator.valueOf(names[0]), value));
+                boolean isCanSearch = true;
+                if (value instanceof String) {
+                    isCanSearch = StringUtils.hasText(value.toString());
+                } else if (value instanceof Collection) {
+                    isCanSearch = !CollectionUtils.isEmpty((Collection<?>) value);
+                } else {
+                    isCanSearch = (value != null);
+                }
+                if (isCanSearch) {
+                    // 创建searchFilter
+                    filters.add(new SearchFilter(filedName, Operator.valueOf(names[0]), value));
+                }
             }
         });
         return filters;

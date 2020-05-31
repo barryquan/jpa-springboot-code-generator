@@ -2,8 +2,6 @@ package ${packageName};
 
 import java.util.Map;
 
-import org.springframework.util.StringUtils;
-
 import com.github.barry.akali.base.dto.BaseSearchDto;
 
 import lombok.Data;
@@ -41,13 +39,7 @@ public class ${className} extends BaseSearchDto{
     public void buildSearchParams(Map<String, Object> map) {
         <#if entity.fields?? && (entity.fields?size > 0)>
     <#list entity.fields as f>
-    <#if f.className == "String">
-        if (StringUtils.hasText(this.${f.name})) {
-            super.putNoNull("LIKE_${f.name}", this.${f.name}, map);
-        }
-    <#else>
         super.putNoNull("EQ_${f.name}", this.${f.name}, map);
-    </#if>
     </#list>
     </#if>
     }
