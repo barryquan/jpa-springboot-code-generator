@@ -5,7 +5,7 @@ package com.github.barry.akali.base.ex;
  * 基础异常类，所有自定义异常类都需要继承本类
  * </p>
  *
- * @author quansr
+ * @author barry
  */
 public class BaseException extends RuntimeException {
 

@@ -41,7 +41,7 @@ public class ResponseDto<T> {
      * 请求成功的返回方法
      * 
      * @param data 返回数据
-     * @return
+     * @return 成功响应参数
      */
     public static <T> ResponseDto<T> success(T data) {
         return new ResponseDto<>(data);
@@ -52,7 +52,7 @@ public class ResponseDto<T> {
      * 
      * @param code 错误码
      * @param msg  错误信息
-     * @return
+     * @return 失败的响应参数
      */
     public static <T> ResponseDto<T> error(int code, String msg) {
         return new ResponseDto<>(code, msg);

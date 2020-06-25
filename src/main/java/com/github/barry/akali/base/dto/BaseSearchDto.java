@@ -43,10 +43,10 @@ public abstract class BaseSearchDto {
      * 
      * @param key   查询的key，如：LIKE_name
      * @param value 对应的值，不为空，如：123
-     * @param map
+     * @param map 存放搜索参数map
      */
     public void putNoNull(String key, Object value, Map<String, Object> map) {
-        boolean isCanSearch = true;
+        boolean isCanSearch;
         if (value instanceof String) {
             isCanSearch = StringUtils.hasText(value.toString());
         } else if (value instanceof Collection) {

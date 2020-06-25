@@ -24,9 +24,8 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * 页面搜索及JPA的搜索参数构造工具类
- * 
- * @author barry
  *
+ * @author barry
  */
 public class RequestSearchUtils {
 
@@ -47,14 +46,12 @@ public class RequestSearchUtils {
 
     /**
      * 组合Parameters生成Query String的Parameter部分, 并在paramter name上加上prefix.
-     * 
-     * @see #getParametersStartingWith
      */
     public static String enParamStrWithPrefix(Map<String, Object> params, String prefix) {
         if (params == null || params.isEmpty()) {
             return NULL_STRING;
         }
-        prefix = Optional.ofNullable(prefix).orElseGet(() -> NULL_STRING);
+        prefix = Optional.ofNullable(prefix).orElse(NULL_STRING);
         StringBuilder queryStringBuilder = new StringBuilder();
         Iterator<Entry<String, Object>> it = params.entrySet().iterator();
         while (it.hasNext()) {
@@ -69,9 +66,9 @@ public class RequestSearchUtils {
 
     /**
      * 构造一般搜索标准查询
-     * 
-     * @param searchParams
-     * @return
+     *
+     * @param searchParams 搜索参数
+     * @return Specification
      */
     public static <T> Specification<T> buildSpec(Map<String, Object> searchParams) {
         return RequestSearchUtils.bySearchFilter(SearchFilter.parse(searchParams));
@@ -79,21 +76,18 @@ public class RequestSearchUtils {
 
     /**
      * 实现复杂对象查询，实现toPredicate方法，用JPA去构造Specification对象查询；
-     * 
-     * @author qsr
-     *
      */
     public static <T> Specification<T> bySearchFilter(final Collection<SearchFilter> filters) {
         return new Specification<T>() {
             /**
-             * 
+             *
              */
             private static final long serialVersionUID = 7054380594285260439L;
 
             // Root 查询中的条件表达式
             // CriteriaQuery 条件查询设计器
             // CriteriaBuilder 条件查询构造器
-            @SuppressWarnings({ "unchecked", "rawtypes" })
+            @SuppressWarnings({"unchecked", "rawtypes"})
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
                 List<Predicate> predicates = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(filters)) {
@@ -106,93 +100,93 @@ public class RequestSearchUtils {
                             expression = getSubExpression(names, expression, root);
                         }
                         switch (f.operator) {
-                        case EQ:
-                            // 等于查询构造
-                            predicates.add(builder.equal(expression, f.value));
-                            break;
-                        case NE:
-                            // 不等于查询构造
-                            predicates.add(builder.notEqual(expression, f.value));
-                            break;
-                        case LIKE:
-                            // 模糊查询构造
-                            String likeValue = f.value.toString();
-                            if (!likeValue.startsWith(PERCENT_STRING)) {
-                                likeValue = likeValue.concat(PERCENT_STRING);
-                            }
-                            if (!likeValue.endsWith(PERCENT_STRING)) {
-                                likeValue = likeValue.concat(PERCENT_STRING);
-                            }
-                            predicates.add(builder.like(expression, likeValue));
-                            break;
-                        case GT:
-                            // 大于查询构造
-                            predicates.add(builder.greaterThan(expression, (Comparable) f.value));
-                            break;
-                        case LT:
-                            // 小于查询构造
-                            predicates.add(builder.lessThan(expression, (Comparable) f.value));
-                            break;
-                        case GTE:
-                            // 大于等于查询
-                            predicates.add(builder.greaterThanOrEqualTo(expression, (Comparable) f.value));
-                            break;
-                        case LTE:
-                            // 小于等于查询构造
-                            predicates.add(builder.lessThanOrEqualTo(expression, (Comparable) f.value));
-                            break;
-                        case IN:
-                            // 使用IN的查询构造，需要以数组为Value;
-                            Object[] queryObj = null;
-                            if (f.value instanceof Collection) {
-                                queryObj = (Object[]) ((Collection) f.value).toArray();
-                            } else {
-                                queryObj = (Object[]) f.value;
-                            }
-                            predicates.add(builder.isTrue(expression.in(queryObj)));
-                            break;
-                        case BETWEEN:
-                            if (f.value instanceof List) {
-                                List c = (List) f.value;
-                                Object param1 = c.get(0);
-                                Object param2 = c.get(1);
-                                if (param1 instanceof Number) {
-                                    predicates.add(builder.between(expression, ((Number) param1).longValue(),
-                                            ((Number) param2).longValue()));
-                                } else if (param1 instanceof Date) {
-                                    predicates.add(builder.between(expression, (Date) param1, (Date) param2));
-                                } else if (param1 instanceof LocalDateTime) {
-                                    predicates.add(builder.between(expression, (LocalDateTime) param1,
-                                            (LocalDateTime) param2));
-                                } else {
-                                    predicates.add(builder.between(expression, param1.toString(), param2.toString()));
+                            case EQ:
+                                // 等于查询构造
+                                predicates.add(builder.equal(expression, f.value));
+                                break;
+                            case NE:
+                                // 不等于查询构造
+                                predicates.add(builder.notEqual(expression, f.value));
+                                break;
+                            case LIKE:
+                                // 模糊查询构造
+                                String likeValue = f.value.toString();
+                                if (!likeValue.startsWith(PERCENT_STRING)) {
+                                    likeValue = likeValue.concat(PERCENT_STRING);
                                 }
-                            }
-                            break;
-                        case ISNULL:
-                            predicates.add(builder.isNull(expression));
-                            break;
-                        case ISNOTNULL:
-                            predicates.add(builder.isNotNull(expression));
-                            break;
-                        default:
-                            break;
+                                if (!likeValue.endsWith(PERCENT_STRING)) {
+                                    likeValue = likeValue.concat(PERCENT_STRING);
+                                }
+                                predicates.add(builder.like(expression, likeValue));
+                                break;
+                            case GT:
+                                // 大于查询构造
+                                predicates.add(builder.greaterThan(expression, (Comparable) f.value));
+                                break;
+                            case LT:
+                                // 小于查询构造
+                                predicates.add(builder.lessThan(expression, (Comparable) f.value));
+                                break;
+                            case GTE:
+                                // 大于等于查询
+                                predicates.add(builder.greaterThanOrEqualTo(expression, (Comparable) f.value));
+                                break;
+                            case LTE:
+                                // 小于等于查询构造
+                                predicates.add(builder.lessThanOrEqualTo(expression, (Comparable) f.value));
+                                break;
+                            case IN:
+                                // 使用IN的查询构造，需要以数组为Value;
+                                Object[] queryObj;
+                                if (f.value instanceof Collection) {
+                                    queryObj = ((Collection) f.value).toArray();
+                                } else {
+                                    queryObj = (Object[]) f.value;
+                                }
+                                predicates.add(builder.isTrue(expression.in(queryObj)));
+                                break;
+                            case BETWEEN:
+                                if (f.value instanceof List) {
+                                    List c = (List) f.value;
+                                    Object param1 = c.get(0);
+                                    Object param2 = c.get(1);
+                                    if (param1 instanceof Number) {
+                                        predicates.add(builder.between(expression, ((Number) param1).longValue(),
+                                                ((Number) param2).longValue()));
+                                    } else if (param1 instanceof Date) {
+                                        predicates.add(builder.between(expression, (Date) param1, (Date) param2));
+                                    } else if (param1 instanceof LocalDateTime) {
+                                        predicates.add(builder.between(expression, (LocalDateTime) param1,
+                                                (LocalDateTime) param2));
+                                    } else {
+                                        predicates.add(builder.between(expression, param1.toString(), param2.toString()));
+                                    }
+                                }
+                                break;
+                            case ISNULL:
+                                predicates.add(builder.isNull(expression));
+                                break;
+                            case ISNOTNULL:
+                                predicates.add(builder.isNotNull(expression));
+                                break;
+                            default:
+                                break;
                         }
                     });
                 }
                 // 如果predicates集合大于0，将所有条件用 and 联合起来
                 return predicates.isEmpty() ? builder.conjunction()
-                        : builder.and(predicates.toArray(new Predicate[predicates.size()]));
+                        : builder.and(predicates.toArray(new Predicate[0]));
             }
 
             /**
              * 无限连接查询构造<br>
              * 支持属性为List、Set、Map的集合数据
-             * 
+             *
              * @param names      对应实体里面的字段
-             * @param expression
-             * @param root
-             * @return
+             * @param expression 表达式
+             * @param root 根数据
+             * @return path
              */
             @SuppressWarnings("rawtypes")
             private Path getSubExpression(String[] names, Path expression, Root<T> root) {

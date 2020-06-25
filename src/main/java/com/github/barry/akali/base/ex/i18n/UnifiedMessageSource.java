@@ -9,9 +9,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * 错误信息国际化处理
- * 
- * @author quansr
  *
+ * @author quansr
  */
 @Component
 public class UnifiedMessageSource {
@@ -21,9 +20,9 @@ public class UnifiedMessageSource {
 
     /**
      * 获取国际化消息
-     * 
+     *
      * @param code 消息code
-     * @return
+     * @return 国际化消息字符串
      */
     public String getMessage(String code) {
 
@@ -32,10 +31,10 @@ public class UnifiedMessageSource {
 
     /**
      * 获取国际化消息
-     * 
+     *
      * @param code 消息code
      * @param args 参数
-     * @return
+     * @return 国际化消息字符串
      */
     public String getMessage(String code, Object[] args) {
 
@@ -44,11 +43,11 @@ public class UnifiedMessageSource {
 
     /**
      * 获取国际化消息
-     * 
+     *
      * @param code           消息code
      * @param args           参数
      * @param defaultMessage 默认消息
-     * @return
+     * @return 国际化消息字符串
      */
     public String getMessage(String code, Object[] args, String defaultMessage) {
         Locale locale = LocaleContextHolder.getLocale();

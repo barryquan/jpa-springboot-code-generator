@@ -11,7 +11,7 @@ import ${entity.packageName}.${entity.className};
  * ${comments}
  *
  * @author ${author}
- * Created On ${date}.
+ * @since ${date}.
  */
 @RepositoryRestResource(path = "${entity.className?uncap_first}", itemResourceRel = "resource", collectionResourceRel = "resources")
 public interface ${className} extends BaseRepository<${entity.className}, ${entity.id.className}> {

@@ -42,9 +42,8 @@ public class EnumConverter implements BeanConverter {
      */
     @Override
     public boolean match(Class<?> sourceClass, Class<?> targetClass) {
-        boolean isMath = targetClass.isEnum()
+        return targetClass.isEnum()
                 && (Objects.equals(String.class, sourceClass) || Objects.equals(Integer.class, sourceClass));
-        return isMath;
     }
 
 }

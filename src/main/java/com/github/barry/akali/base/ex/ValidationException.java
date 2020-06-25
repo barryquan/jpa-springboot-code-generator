@@ -8,7 +8,7 @@ package com.github.barry.akali.base.ex;
  * 调用接口时，参数格式不合法可以抛出该异常
  * </p>
  *
- * @author quansr
+ * @author barry
  */
 public class ValidationException extends BaseException {
 

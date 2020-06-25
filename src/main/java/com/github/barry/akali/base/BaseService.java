@@ -26,11 +26,10 @@ import io.beanmapper.config.BeanMapperBuilder;
 /**
  * 基础业务模型，用于实现基础的业务功能<br>
  * 本身自带强大的查询参数构造
- * 
- * @author barry
  *
  * @param <T>  数据库实体
  * @param <ID> 数据库实体的主键实体
+ * @author barry
  */
 public abstract class BaseService<T, ID extends Serializable> {
 
@@ -55,7 +54,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 保存单个实体
-     * 
+     *
      * @param t 实体
      * @return 返回保存的实体
      */
@@ -66,8 +65,8 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 保存多个实体
-     * 
-     * @param List<t> 实体
+     *
+     * @param tlist 实体
      * @return 返回保存的实体
      */
     @Transactional(readOnly = false)
@@ -77,7 +76,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /***
      * 删除实体
-     * 
+     *
      * @param id 主键id
      */
     @Transactional(readOnly = false)
@@ -87,7 +86,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /***
      * 删除实体
-     * 
+     *
      * @param t 需要删除的实体
      */
     @Transactional(readOnly = false)
@@ -97,7 +96,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /***
      * 根据主键集合删除实体
-     * 
+     *
      * @param ids 主键集合
      */
     @Transactional(readOnly = false)
@@ -108,7 +107,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 删除实体集合
-     * 
+     *
      * @param delList
      */
     @Transactional(readOnly = false)
@@ -138,7 +137,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     /**
      * 根据某个字段查询数量<br>
      * 该查询会过滤掉实体字段isActive=false的数据
-     * 
+     *
      * @param param    实体的搜索字段，字段必须在实体中存在
      * @param operator 搜索查询的方式
      * @param object   搜索查询的值
@@ -152,7 +151,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 根据map条件获取查询符合条件的数量
-     * 
+     *
      * @param searchParams
      * @return
      */
@@ -163,7 +162,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 根据查询条件获取数量
-     * 
+     *
      * @param spec 构造的JPA搜索条件
      * @return 查询的数量
      */
@@ -174,7 +173,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 按照主键查询
-     * 
+     *
      * @param id 主键
      * @return 返回id对应的实体
      */
@@ -186,7 +185,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     /**
      * 根据某个字段查询单个实体<br>
      * 该查询不会过滤实体字段isActive=false的数据<br>
-     * 
+     *
      * @param param    实体的搜索字段，字段必须在实体中存在
      * @param operator 搜索查询的方式
      * @param object   搜索查询的值
@@ -202,10 +201,8 @@ public abstract class BaseService<T, ID extends Serializable> {
      * 查询所有实体，根据排序方式和字段排序<br>
      * searchParams的参数key必须包含如：EQ_name=xxx<br>
      * 否则无法正确解析构造动态的jpa搜索条件
-     * 
+     *
      * @param searchParams 搜索参数
-     * @param direction    排序方式
-     * @param sortType     排序字段
      * @return
      */
     @Transactional(readOnly = true)
@@ -215,7 +212,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 根据查询条件获取，返回Optional
-     * 
+     *
      * @param spec 构造的JPA搜索条件
      * @return 返回实体的Optional信息
      */
@@ -226,7 +223,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 查询所有实体
-     * 
+     *
      * @return 实体集合
      */
     @Transactional(readOnly = true)
@@ -237,7 +234,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     /**
      * 根据某个字段查询实体集合<br>
      * 该查询会过滤掉实体字段isActive=false的数据
-     * 
+     *
      * @param param    实体的搜索字段，字段必须在实体中存在
      * @param operator 搜索的方式
      * @param object   搜索的值
@@ -253,7 +250,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      * 查询所有实体，根据排序方式和字段排序<br>
      * searchParams的参数key必须包含如：EQ_name=xxx<br>
      * 否则无法正确解析构造动态的jpa搜索条件
-     * 
+     *
      * @param searchParams 搜索参数
      * @return 实体集合
      */
@@ -266,7 +263,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      * 查询所有实体，根据排序方式和字段排序<br>
      * searchParams的参数key必须包含如：EQ_name=xxx<br>
      * 否则无法正确解析构造动态的jpa搜索条件
-     * 
+     *
      * @param searchParams 搜索参数
      * @param direction    排序方式
      * @param sortType     排序字段
@@ -279,7 +276,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 根据查询条件获取所有
-     * 
+     *
      * @param spec 构造的JPA搜索条件
      * @return 实体集合
      */
@@ -290,7 +287,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 获取分页，不排序
-     * 
+     *
      * @param searchParams 搜索参数
      * @param pageNumber   页码
      * @param pageSize     分页大小
@@ -304,7 +301,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 获取分页
-     * 
+     *
      * @param searchParams 搜索参数
      * @param pageNumber   页码
      * @param pageSize     分页大小
@@ -314,14 +311,14 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public Page<T> findPageBySort(Map<String, Object> searchParams, int pageNumber, int pageSize, Direction direction,
-            String... sortType) {
+                                  String... sortType) {
         return baseRepository.findAll(RequestSearchUtils.buildSpec(searchParams),
                 PageRequest.of(pageNumber > 0 ? pageNumber - 1 : pageNumber, pageSize, Sort.by(direction, sortType)));
     }
 
     /**
      * 获取集合的子列表，第二个参数是获取的大小，从0开始
-     * 
+     *
      * @param list  数据集合
      * @param limit 子列表大小
      * @return 实体集合
@@ -333,7 +330,7 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 统一构造默认查询条件的<code>SearchFilter</code>集合
-     * 
+     *
      * @param param    实体的搜索字段，字段必须在实体中存在
      * @param operator 搜索查询的方式
      * @param object   搜索查询的值
@@ -347,7 +344,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     /**
      * 克隆对象属性值<br>
      * 来源和接收实体都不能为空
-     * 
+     *
      * @param source      属性来源实体
      * @param destination 属性接收实体
      */
@@ -358,10 +355,8 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 克隆对象属性值<br>
-     * 
-     * 
+     *
      * @param <E>
-     * 
      * @param source 属性来源实体，不能为null
      * @param clz    属性实体的class类型
      */
@@ -372,10 +367,9 @@ public abstract class BaseService<T, ID extends Serializable> {
 
     /**
      * 克隆集合对象属性
-     * 
+     *
      * @param <D>
      * @param <E>
-     * 
      * @param sourceList 属性来源实体集合
      * @param clz        属性接收实体的class
      */
@@ -387,7 +381,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     /**
      * 将一个实体转换成另一个实体<br>
      * 通常情况下是将map转成Java Bean
-     * 
+     *
      * @param <S>
      * @param source 来源实体
      * @param cls    目标转换的class

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * ${comments}
  *
  * @author ${author}
- * Created On ${date}.
+ * @since ${date}.
  */
 @Slf4j
 @Service
@@ -74,7 +74,7 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
     /**
      * 更新实体
      *
-     * @param dto 表单
+     * @param ${lastRenderResponse.dto.className?uncap_first} 表单
      * @param id      实体id
      * @return 实体对象
      */

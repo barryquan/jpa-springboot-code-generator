@@ -16,7 +16,7 @@ public class UserUtils {
     /**
      * 获取当前登录的用户
      * 
-     * @return
+     * @return 当前操作的用户
      */
     public static String getCurrentUser() {
         String principal = "";

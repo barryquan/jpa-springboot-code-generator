@@ -10,10 +10,10 @@ import lombok.ToString;
 
 /**
  * 用户数据库实体
- * 
+ *
  * @author quansr
- * @date 创建时间：2019年12月13日 下午2:03:45
  * @version 1.0
+ * @since 创建时间：2019年12月13日 下午2:03:45
  */
 @Data
 @Entity
@@ -22,7 +22,7 @@ import lombok.ToString;
 public class User extends BaseEntity {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -8502915311006879921L;
 

@@ -11,7 +11,7 @@ package com.github.barry.akali.base.ex;
  * 编写公共代码（如工具类）时，对传入参数检查不通过时，可以抛出该异常
  * </p>
  *
- * @author quansr
+ * @author barry
  */
 public class ArgumentException extends BaseException {
 

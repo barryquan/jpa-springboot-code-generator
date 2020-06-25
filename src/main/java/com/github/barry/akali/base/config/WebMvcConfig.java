@@ -1,15 +1,14 @@
 package com.github.barry.akali.base.config;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.github.barry.akali.base.xss.StringXssDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.github.barry.akali.base.xss.StringXssDeserializer;
-
 /***
  * spring mvc相关配置
- * 
+ *
  * @author barry
  *
  */
@@ -18,8 +17,6 @@ public class WebMvcConfig {
 
     /**
      * 替换默认的转换器,用于防御XSS攻击
-     * 
-     * @return
      */
     @Bean
     public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {

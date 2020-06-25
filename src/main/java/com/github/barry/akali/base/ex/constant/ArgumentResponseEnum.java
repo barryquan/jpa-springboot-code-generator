@@ -20,11 +20,11 @@ public enum ArgumentResponseEnum implements CommonExceptionAssert {
     /**
      * 返回码
      */
-    private int code;
+    private final int code;
     /**
      * 返回消息
      */
-    private String message;
+    private final String message;
 
     public int getCode() {
         return code;
@@ -34,7 +34,7 @@ public enum ArgumentResponseEnum implements CommonExceptionAssert {
         return message;
     }
 
-    private ArgumentResponseEnum(int code, String message) {
+    ArgumentResponseEnum(int code, String message) {
         this.code = code;
         this.message = message;
     }

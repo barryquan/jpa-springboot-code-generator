@@ -15,7 +15,7 @@ import ${import};
  * ${comments}
  *
  * @author ${author}
- * Created On ${date}.
+ * @since ${date}.
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

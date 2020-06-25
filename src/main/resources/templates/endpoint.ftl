@@ -33,7 +33,7 @@ import ${lastRenderResponse.service.packageName}.${lastRenderResponse.service.cl
  * ${comments}
  *
  * @author ${author}
- * Created On ${date}.
+ * @since ${date}.
  */
 @RestController
 @RequestMapping("/${entity.className?uncap_first}")
@@ -45,8 +45,7 @@ public class ${className} extends BaseEndpoint {
     /**
      * 新增
      * 
-     * @param ${lastRenderResponse.dto.className?uncap_first}
-     * @return
+     * @param ${lastRenderResponse.dto.className?uncap_first} 请求参数
      */
     @PostMapping("")
     public ResponseEntity<?> create(@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
@@ -57,8 +56,7 @@ public class ${className} extends BaseEndpoint {
     /**
      * 根据主键删除，支持批量主键删除
      * 
-     * @param ids
-     * @return
+     * @param ids 删除的主键集合
      */
     @DeleteMapping("/{ids}")
     public ResponseDto<?> delete(@PathVariable List<${entity.id.className}> ids) {
@@ -69,9 +67,8 @@ public class ${className} extends BaseEndpoint {
     /**
      * 更新
      * 
-     * @param ${lastRenderResponse.dto.className}
-     * @param id
-     * @return
+     * @param ${lastRenderResponse.dto.className?uncap_first} 请求参数
+     * @param id 主键id
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable ${entity.id.className} id,@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
@@ -82,8 +79,7 @@ public class ${className} extends BaseEndpoint {
     /**
      * 详情
      * 
-     * @param id
-     * @return
+     * @param id 主键id
      */
     @Override
     @GetMapping("/{id}")
@@ -109,8 +105,7 @@ public class ${className} extends BaseEndpoint {
     /**
      * 条件搜索，返回不分页的列表
      * 
-     * @param request
-     * @return
+     * @param request 请求参数
      */
     @GetMapping("/find/params")
     public ResponseEntity<?> findByParams(

@@ -11,9 +11,8 @@ import com.github.barry.akali.base.utils.UserUtils;
 
 /**
  * 开启jpa自动填充创建人、创建时间、更新人、更新时间的配置
- * 
- * @author barry
  *
+ * @author barry
  */
 @Configuration
 @EnableJpaAuditing
@@ -21,16 +20,9 @@ public class JpaConfig {
 
     /**
      * 实现AuditorAware接口，这样才会填充创建和更新的操作人
-     * 
-     * @return
      */
     @Bean
     public AuditorAware<String> auditorAware() {
-        return new AuditorAware<String>() {
-            @Override
-            public Optional<String> getCurrentAuditor() {
-                return Optional.ofNullable(UserUtils.getCurrentUser());
-            }
-        };
+        return () -> Optional.ofNullable(UserUtils.getCurrentUser());
     }
 }

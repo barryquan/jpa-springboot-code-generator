@@ -8,7 +8,7 @@ package com.github.barry.akali.base.ex;
  * 业务处理时，出现异常，可以抛出该异常
  * </p>
  *
- * @author quansr
+ * @author barry
  */
 public class BusinessException extends BaseException {
 

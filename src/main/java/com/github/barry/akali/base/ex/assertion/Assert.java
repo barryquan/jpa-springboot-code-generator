@@ -18,18 +18,18 @@ import com.github.barry.akali.base.ex.BaseException;
 public interface Assert {
     /**
      * 创建异常
-     * 
-     * @param args
-     * @return
+     *
+     * @param args 异常信息参数
+     * @return BaseException
      */
     BaseException newException(Object... args);
 
     /**
      * 创建异常
-     * 
-     * @param t
-     * @param args
-     * @return
+     *
+     * @param t    抛出的异常
+     * @param args 异常信息参数
+     * @return 异常
      */
     BaseException newException(Throwable t, Object... args);
 
@@ -242,7 +242,6 @@ public interface Assert {
     /**
      * <p>
      * 直接抛出异常
-     *
      */
     default void assertFail() {
         throw newException();

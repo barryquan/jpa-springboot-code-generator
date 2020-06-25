@@ -47,7 +47,7 @@ import com.github.barry.akali.base.ex.i18n.UnifiedMessageSource;
 
 /***
  * 统一封装异常、统一处理出参
- * 
+ *
  * @author barry
  *
  */
@@ -75,7 +75,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
 
     /**
      * 业务异常
-     * 
+     *
      * @param request  请求参数
      * @param response 响应参数
      * @param e        异常
@@ -83,7 +83,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
      */
     @ExceptionHandler(value = BusinessException.class)
     public ResponseDto<?> handleBusinessException(HttpServletRequest request, HttpServletResponse response,
-            BaseException e) {
+                                                  BusinessException e) {
         log.error("调用={}服务出现业务调用发生异常，请求的url是={}，请求的方法是={}，原因={}", serviceName, request.getRequestURL(),
                 request.getMethod(), e.getMessage(), e);
         return ResponseDto.error(e.getResponseEnum().getCode(), getMessage(e));
@@ -91,7 +91,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
 
     /**
      * 自定义异常
-     * 
+     *
      * @param request  请求参数
      * @param response 响应参数
      * @param e        异常
@@ -99,7 +99,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
      */
     @ExceptionHandler(value = BaseException.class)
     public ResponseDto<?> handleBaseException(HttpServletRequest request, HttpServletResponse response,
-            BaseException e) {
+                                              BaseException e) {
         log.error("调用={}服务出现自定义异常，请求的url是={}，请求的方法是={}，原因={}", serviceName, request.getRequestURL(),
                 request.getMethod(), e.getMessage(), e);
         return ResponseDto.error(e.getResponseEnum().getCode(), getMessage(e));
@@ -107,20 +107,20 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
 
     /**
      * Controller上一层相关异常
-     * 
+     *
      * @param request  请求参数
      * @param response 响应参数
      * @param e        异常
      * @return 异常结果
      */
-    @ExceptionHandler({ NoHandlerFoundException.class, HttpRequestMethodNotSupportedException.class,
+    @ExceptionHandler({NoHandlerFoundException.class, HttpRequestMethodNotSupportedException.class,
             HttpMediaTypeNotSupportedException.class, HttpMediaTypeNotAcceptableException.class,
             MissingPathVariableException.class, MissingServletRequestParameterException.class,
             TypeMismatchException.class, HttpMessageNotReadableException.class, HttpMessageNotWritableException.class,
             ServletRequestBindingException.class, ConversionNotSupportedException.class,
-            MissingServletRequestPartException.class, AsyncRequestTimeoutException.class })
+            MissingServletRequestPartException.class, AsyncRequestTimeoutException.class})
     public ResponseDto<?> handleServletException(HttpServletRequest request, HttpServletResponse response,
-            Exception e) {
+                                                 Exception e) {
         log.error("调用={}服务出现controller的上层出现异常，请求的url是={}，请求的方法是={}，原因={}", serviceName, request.getRequestURL(),
                 request.getMethod(), e);
         int code = CommonResponseEnum.SERVER_ERROR.getCode();
@@ -144,7 +144,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
 
     /**
      * 参数绑定异常
-     * 
+     *
      * @param request  请求参数
      * @param response 响应参数
      * @param e        异常
@@ -152,7 +152,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
      */
     @ExceptionHandler(value = BindException.class)
     public ResponseDto<?> handleBindException(HttpServletRequest request, HttpServletResponse response,
-            BindException e) {
+                                              BindException e) {
         log.error("调用={}服务出现参数绑定校验异常，请求的url是={}，请求的方法是={}，原因={}", serviceName, request.getRequestURL(),
                 request.getMethod(), e);
         return wrapperBindingResult(e.getBindingResult());
@@ -160,7 +160,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
 
     /**
      * 参数校验(Valid)异常，将校验失败的所有异常组合成一条错误信息
-     * 
+     *
      * @param request  请求参数
      * @param response 响应参数
      * @param e        异常
@@ -168,7 +168,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseDto<?> handleValidException(HttpServletRequest request, HttpServletResponse response,
-            MethodArgumentNotValidException e) {
+                                               MethodArgumentNotValidException e) {
         log.error("调用={}服务出现方法参数校验异常，请求的url是={}，请求的方法是={}，原因={}", serviceName, request.getRequestURL(),
                 request.getMethod(), e);
         return wrapperBindingResult(e.getBindingResult());
@@ -176,7 +176,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
 
     /**
      * 其他未定义的异常
-     * 
+     *
      * @param request  请求参数
      * @param response 响应参数
      * @param e        异常
@@ -204,7 +204,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
      */
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType mediaType,
-            Class<? extends HttpMessageConverter<?>> arg3, ServerHttpRequest arg4, ServerHttpResponse arg5) {
+                                  Class<? extends HttpMessageConverter<?>> arg3, ServerHttpRequest arg4, ServerHttpResponse arg5) {
         // 1.获取返回参数的全类名，如：com.rong.entity.User
         final String returnTypeName = returnType.getParameterType().getName();
 
@@ -231,7 +231,7 @@ public class RestExceptionHandler implements ResponseBodyAdvice<Object> {
      * 获取国际化消息
      *
      * @param e 异常
-     * @return
+     * @return 国际化消息
      */
     public String getMessage(BaseException e) {
         String code = "response." + e.getResponseEnum().toString();

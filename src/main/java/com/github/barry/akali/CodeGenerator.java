@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * 基于jpa的实体自动生成对应的controller、service、repository的代码生成器
  * 
  * @author quansr
- * @date 创建时间：2019年12月13日 下午1:49:54
+ * @since 创建时间：2019年12月13日 下午1:49:54
  * @version 1.0
  */
 @Slf4j
@@ -89,15 +89,15 @@ public class CodeGenerator {
                 .registerRender(GeneratorConstants.SERVICE_MODULE) // 注册service的模板
                 .registerRender(GeneratorConstants.CONTROLLER_MODULE) // 注册控制器的模板
                 .generate(); // 开始自动生成
-        log.info("thanks you use,code generator sucess");
+        log.info("thanks you use,code generator success");
         log.info("generator code use {} ms", System.currentTimeMillis() - start);
     }
 
     /**
      * 是否使用数据库进行创建
      * 
-     * @param isUseDb
-     * @return
+     * @param isUseDb 是否使用数据库
+     * @return this
      */
     private CodeGenerator useDb(boolean isUseDb) {
         config.setUseDb(isUseDb);
@@ -107,8 +107,8 @@ public class CodeGenerator {
     /**
      * 反射获取实体的父类
      * 
-     * @param superEntityClass
-     * @return
+     * @param superEntityClass 父类包名
+     * @return this
      */
     private CodeGenerator packSuperClazz(String superEntityClass) {
         try {
@@ -238,7 +238,7 @@ public class CodeGenerator {
     }
 
     public void generate() {
-        List<EntityInfo> entityInfos = null;
+        List<EntityInfo> entityInfos;
         if (!config.isUseDb()) {
             log.info("use entity package generator");
             entityInfos = config.getEntityClasses().stream().map(entityParser::parse).filter(Objects::nonNull)
@@ -257,16 +257,14 @@ public class CodeGenerator {
 
         if (!CollectionUtils.isEmpty(entityInfos)) {
             log.info("find {} entity classes, now start generate code.", entityInfos.size());
-            entityInfos.forEach(e -> {
-                moduleList.forEach(m -> {
-                    // 不使用数据库创建的，存在实体模板，直接跳过
-                    if (Objects.equals(GeneratorConstants.ENTITY_MODULE, m) && !config.isUseDb()) {
-                    } else {
-                        render.render(e, m, config.getBaseProjectPath());
-                    }
+            entityInfos.forEach(e -> moduleList.forEach(m -> {
+                // 不使用数据库创建的，存在实体模板，直接跳过
+                if (Objects.equals(GeneratorConstants.ENTITY_MODULE, m) && !config.isUseDb()) {
+                } else {
+                    render.render(e, m, config.getBaseProjectPath());
+                }
 
-                });
-            });
+            }));
         } else {
             log.warn("find none entity class, please check your entity package or db is true.");
         }
@@ -275,7 +273,7 @@ public class CodeGenerator {
     /**
      * 从数据库中获取实体的信息
      * 
-     * @return
+     * @return 实体字段信息集合
      */
     private List<EntityInfo> getEntityFromDb() {
         List<String> superFieldList;

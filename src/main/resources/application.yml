@@ -21,7 +21,7 @@ spring:
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
 akali:
-  author: quansr
+  author: barry
   comments: 这是类的注释
   cover: true
   template:

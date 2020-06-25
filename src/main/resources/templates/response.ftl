@@ -16,7 +16,7 @@ import ${import};
  * ${comments}
  *
  * @author ${author}
- * Created On ${date}.
+ * @since ${date}.
  */
 @Data
 @ToString(callSuper = true)

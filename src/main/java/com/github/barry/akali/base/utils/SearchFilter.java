@@ -73,7 +73,7 @@ public class SearchFilter {
      * 如果是联表查询，字段取值方式可以是"b.id"，也可以是"b_id"<br>
      * 
      * @param searchParams 传递进来的搜索map参数
-     * @return
+     * @return 搜索条件集合
      */
     public static List<SearchFilter> parse(Map<String, Object> searchParams) {
         List<SearchFilter> filters = new ArrayList<>(searchParams.size());
@@ -88,7 +88,7 @@ public class SearchFilter {
                 }
                 // 获取搜索的字段名
                 String filedName = key.substring(names[0].length() + 1).replaceAll("_", ".");
-                boolean isCanSearch = true;
+                boolean isCanSearch;
                 if (value instanceof String) {
                     isCanSearch = StringUtils.hasText(value.toString());
                 } else if (value instanceof Collection) {

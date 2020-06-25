@@ -151,8 +151,6 @@ public abstract class BaseEndpoint implements WebBindingInitializer {
     /**
      * 数据为空时构造空的pageModel
      * 
-     * @param <S>
-     * @param <S>
      * @param clz          类型
      * @param pageMetadata 分页信息
      * @return

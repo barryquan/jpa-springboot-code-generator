@@ -32,15 +32,15 @@ public enum ServletResponseEnum {
     /**
      * 返回码，目前与{@link #statusCode}相同
      */
-    private int code;
+    private final int code;
     /**
      * 返回信息，直接读取异常的message
      */
-    private String message;
+    private final String message;
     /**
      * HTTP状态码
      */
-    private int statusCode;
+    private final int statusCode;
 
     public int getCode() {
         return code;
@@ -54,7 +54,7 @@ public enum ServletResponseEnum {
         return statusCode;
     }
 
-    private ServletResponseEnum(int code, String message, int statusCode) {
+    ServletResponseEnum(int code, String message, int statusCode) {
         this.code = code;
         this.message = message;
         this.statusCode = statusCode;
