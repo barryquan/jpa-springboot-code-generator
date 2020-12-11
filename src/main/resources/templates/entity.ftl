@@ -1,7 +1,14 @@
 package ${packageName};
 
-import com.github.barry.akali.base.BaseEntity;
 import javax.persistence.Column;
+<#if entity.hasPk>
+import java.io.Serializable;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+<#else>
+import com.github.barry.akali.base.BaseEntity;
+</#if>
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -13,7 +20,7 @@ import ${import};
 
 /**
  *  
- * ${comments}
+ * ${entity.comment}
  *
  * @author ${author}
  * @since ${date}.
@@ -22,7 +29,7 @@ import ${import};
 @Entity
 @Table(name = "${entity.tableName}")
 @EqualsAndHashCode(callSuper = false)
-public class ${className} extends BaseEntity {
+public class ${className} <#if entity.hasPk>implements Serializable<#else> extends BaseEntity </#if> {
 
     /**
      * 
@@ -32,8 +39,12 @@ public class ${className} extends BaseEntity {
     <#if entity.fields?? && (entity.fields?size > 0)>
     <#list entity.fields as f>
     /**
-     * TODO ${f.comment}
+     * ${f.comment}
      */
+     <#if f.isPk>
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+     </#if>
     @Column(name = "${f.columnName}")
     private ${f.className} ${f.name};
 

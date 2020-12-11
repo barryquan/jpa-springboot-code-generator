@@ -33,4 +33,9 @@ public class FieldInfo extends BaseClassInfo {
      */
     private String columnName;
 
+    /**
+     * 该字段是否为主键字段,默认为false
+     */
+    private Boolean isPk = Boolean.FALSE;
+
 }

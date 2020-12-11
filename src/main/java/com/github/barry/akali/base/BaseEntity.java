@@ -36,7 +36,7 @@ public abstract class BaseEntity implements Serializable {
     /** 实体ID, 主键 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Integer id;
+    protected Long id;
 
     /**
      * 创建人
@@ -63,11 +63,11 @@ public abstract class BaseEntity implements Serializable {
     /** 实体删除标记，为false表示删除 */
     protected Boolean isActive = Boolean.TRUE;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

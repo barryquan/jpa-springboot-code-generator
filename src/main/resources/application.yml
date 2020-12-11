@@ -12,14 +12,19 @@ spring:
   jpa:
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    #database-platform: org.hibernate.dialect.Oracle10gDialect
     hibernate:
       ddl-auto: update
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/rong_spring_test?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    #url: jdbc:oracle:thin:@10.7.8.112:1521:cscorcdbdev
     username: root
+    #username: market_center
     password: 123456
+    #password: Fhft1q2l3s
     driver-class-name: com.mysql.cj.jdbc.Driver
+    #driver-class-name: oracle.jdbc.driver.OracleDriver
 akali:
   author: barry
   comments: 这是类的注释
@@ -34,7 +39,7 @@ akali:
     template: entity.ftl
     suffix: 
     id:
-      class: Integer
+      class: Long
       package: 
   dto:
     package: com.github.barry.akali.test.dto.request
@@ -61,7 +66,11 @@ akali:
     template: repository.ftl
     suffix: Repository
   db:
-    driver: com.mysql.cj.jdbc.Driver
-    url: "jdbc:mysql://localhost:3306/rong_spring_test?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai"
-    username: root
+    #driver: com.mysql.cj.jdbc.Driver
+    driver: oracle.jdbc.driver.OracleDriver
+    #url: "jdbc:mysql://localhost:3306/test_center?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC"
+    url: "jdbc:oracle:thin:@10.7.8.112:1521:cscorcdbdev"
+    #username: root
+    #password: 123456
+    username: message_center
     password: 123456

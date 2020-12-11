@@ -1,6 +1,7 @@
 package com.github.barry.akali.base;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -8,14 +9,18 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.barry.akali.base.conver.EnumConverter;
+import com.github.barry.akali.base.utils.PageInfo;
 import com.github.barry.akali.base.utils.RequestSearchUtils;
 import com.github.barry.akali.base.utils.SearchFilter;
 import com.github.barry.akali.base.utils.SearchFilter.Operator;
@@ -101,8 +106,12 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = false)
     public void deleteAllById(List<ID> ids) {
+        Assert.notEmpty(ids, "删除的主键集合不能为空");
         List<T> delList = baseRepository.findAllById(ids);
-        this.deleteList(delList);
+        if (!CollectionUtils.isEmpty(delList)) {
+            this.deleteList(delList);
+        }
+
     }
 
     /**
@@ -112,6 +121,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = false)
     public void deleteList(List<T> delList) {
+        Assert.notEmpty(delList, "删除的数据集合不能为空");
         baseRepository.deleteInBatch(delList);
     }
 
@@ -310,10 +320,48 @@ public abstract class BaseService<T, ID extends Serializable> {
      * @return 分页实体信息
      */
     @Transactional(readOnly = true)
-    public Page<T> findPageBySort(Map<String, Object> searchParams, int pageNumber, int pageSize, Direction direction,
-                                  String... sortType) {
+    protected Page<T> findPageBySort(Map<String, Object> searchParams, int pageNumber, int pageSize,
+            Direction direction, String... sortType) {
         return baseRepository.findAll(RequestSearchUtils.buildSpec(searchParams),
                 PageRequest.of(pageNumber > 0 ? pageNumber - 1 : pageNumber, pageSize, Sort.by(direction, sortType)));
+    }
+
+    /**
+     * 获取分页数据，并且转成对应的clz<br>
+     * 1.如果不需要转换的，请使用findPageBySort方法
+     * 
+     * @param <S>
+     * @param searchMap 搜索参数
+     * @param pageInfo  分页参数
+     * @param direction 排序方式
+     * @param respClass 出参的clz
+     * @return
+     */
+    protected <S> Page<S> getPageData(Map<String, Object> searchMap, PageInfo pageInfo, Direction direction,
+            Class<S> respClass) {
+        Page<T> page = this.findPageBySort(searchMap, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
+                pageInfo.getSortType().split(","));
+        return CollectionUtils.isEmpty(page.getContent())
+                ? new PageImpl<>(new ArrayList<>(), page.getPageable(), page.getTotalElements())
+                : new PageImpl<>(this.mapperList(page.getContent(), respClass), page.getPageable(),
+                        page.getTotalElements());
+    }
+
+    /**
+     * 获取集合数据，并且转成对应的clz<br>
+     * 1.如果不需要转换的，请使用findAllBySort方法
+     * 
+     * @param <S>
+     * @param searchMap 搜索参数
+     * @param respClass 出参的clz
+     * @param direction 排序方式
+     * @param sortType  排序字段
+     * @return
+     */
+    protected <S> List<S> getListData(Map<String, Object> searchMap, Class<S> respClass, Direction direction,
+            String... sortType) {
+        List<T> list = this.findAllBySort(searchMap, direction, sortType);
+        return CollectionUtils.isEmpty(list) ? new ArrayList<>() : this.mapperList(list, respClass);
     }
 
     /**
@@ -362,6 +410,7 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public <E> E mapperByClass(Object source, Class<E> clz) {
+        Assert.notNull(source, "属性来源实体不能为空");
         return beanMapper.map(source, clz);
     }
 

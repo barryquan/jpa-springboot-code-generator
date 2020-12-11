@@ -151,6 +151,8 @@ public abstract class BaseEndpoint implements WebBindingInitializer {
     /**
      * 数据为空时构造空的pageModel
      * 
+     * @param <S>
+     * @param <S>
      * @param clz          类型
      * @param pageMetadata 分页信息
      * @return
@@ -192,7 +194,7 @@ public abstract class BaseEndpoint implements WebBindingInitializer {
      * @param id 数据库主键id
      * @return spring data rest 的单个实体信息
      */
-    protected abstract ResponseEntity<?> details(Integer id);
+    protected abstract ResponseEntity<?> details(Long id);
 
     /**
      * 构造单个实体的spring data rest形式
@@ -251,7 +253,7 @@ public abstract class BaseEndpoint implements WebBindingInitializer {
                 params.put(paramName, StringEscapeUtils.escapeHtml4(values[0]));
             }
         }
-        log.debug("请求参数解析后为=[{}],原始参数为=[{}]", params, paramMap);
+        log.debug("请求参数解析后为={},原始参数为={}", params, paramMap);
         return params;
     }
 
@@ -262,7 +264,7 @@ public abstract class BaseEndpoint implements WebBindingInitializer {
      * @param id              主键字段
      * @return 构造的链接实体
      */
-    protected Link getSelfLink(Class<?> controllerClass, Integer id) {
+    protected Link getSelfLink(Class<?> controllerClass, Long id) {
         return WebMvcLinkBuilder.linkTo(((BaseEndpoint) WebMvcLinkBuilder.methodOn(controllerClass)).details(id))
                 .withSelfRel();
     }

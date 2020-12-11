@@ -1,5 +1,8 @@
 package com.github.barry.akali.generator.render;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,7 +75,11 @@ public class DefaultRender implements IRender {
         renderingRequest.setOtherParams(config.getOtherParams());
 
         // check for other imports
-        renderingRequest.setImports(checkImports(entityInfo));
+        Set<String> importSet = checkImports(entityInfo);
+        renderingRequest.setImports(importSet);
+
+        // 是否包含时间，包含的话，需要转换格式
+        renderingRequest.setHasDateParam(hasDateParam(importSet));
 
         // use freemarker to render code.
         RenderingResponse lastRenderingResponse = FreeMarkerUtils.process(renderingRequest);
@@ -81,6 +88,27 @@ public class DefaultRender implements IRender {
         log.info("render module is {}, response is {}", module, lastRenderingResponse);
         log.info("lastRenderingResponseMap is {}", lastRenderingResponseMap);
         return lastRenderingResponse;
+    }
+
+    /**
+     * 检查是否包含时间的包需要导入
+     * 
+     * @param importSet
+     * @return
+     */
+    private Boolean hasDateParam(Set<String> importSet) {
+        for (String p : importSet) {
+            if (Objects.equals(LocalDateTime.class.getTypeName(), p)) {
+                return Boolean.TRUE;
+            }
+            if (Objects.equals(LocalDate.class.getTypeName(), p)) {
+                return Boolean.TRUE;
+            }
+            if (Objects.equals(Date.class.getTypeName(), p)) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
     }
 
     /**

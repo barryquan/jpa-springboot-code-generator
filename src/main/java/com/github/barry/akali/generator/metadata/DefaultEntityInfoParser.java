@@ -40,6 +40,9 @@ public class DefaultEntityInfoParser extends BaseEntityParser {
         Table tableAnnotation = clazz.getAnnotation(javax.persistence.Table.class);
         if (tableAnnotation != null) {
             entityInfo.setTableName(tableAnnotation.name());
+            entityInfo.setComment(tableAnnotation.name());
+        }else {
+            entityInfo.setComment(clazz.getSimpleName());
         }
         return entityInfo;
     }
@@ -71,6 +74,7 @@ public class DefaultEntityInfoParser extends BaseEntityParser {
         fieldInfo.setPackageName(f.getType().getTypeName());
 
         fieldInfo.setName(f.getName());
+        fieldInfo.setComment(f.getName());
 
         // 字段注解
         Annotation[] fieldAnnotations = f.getAnnotations();

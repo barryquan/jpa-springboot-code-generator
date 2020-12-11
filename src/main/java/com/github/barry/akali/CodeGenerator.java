@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,8 @@ import com.github.barry.akali.generator.metadata.IEntityParser;
 import com.github.barry.akali.generator.metadata.IdInfo;
 import com.github.barry.akali.generator.render.DefaultRender;
 import com.github.barry.akali.generator.render.IRender;
+import com.github.barry.akali.generator.type.OracleSqlTypeConvert;
+import com.github.barry.akali.generator.type.SqlTypeConvert;
 import com.github.barry.akali.generator.utils.ReflectUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
  * 基于jpa的实体自动生成对应的controller、service、repository的代码生成器
  * 
  * @author quansr
- * @since 创建时间：2019年12月13日 下午1:49:54
+ * @date 创建时间：2019年12月13日 下午1:49:54
  * @version 1.0
  */
 @Slf4j
@@ -69,12 +72,18 @@ public class CodeGenerator {
      */
     private IRender render;
 
+    /**
+     * 数据库类型转成Java实体的类型转换器
+     */
+    private SqlTypeConvert sqlTypeConvert;
+
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         String codeGeneratorConfigPath = "src/main/resources/application.yml";
         String entityPackage = "com.github.barry.akali.entity";
         new CodeGenerator(codeGeneratorConfigPath) //
-                .useDb(false)// 是否使用数据表进行创建，设为true后，packInclude方法不生效
+                .useDb(true)// 是否使用数据表进行创建，设为true后，packInclude方法不生效
+                .setSqlTypeConvert(new OracleSqlTypeConvert())//
                 .packInclude(entityPackage) // 批量加入生成的实体类包名
                 // .clazzInclude(me.itlearner.jpacodegen.sample.entity.SampleUser.class) //
                 // 加入生成的实体类名
@@ -89,15 +98,26 @@ public class CodeGenerator {
                 .registerRender(GeneratorConstants.SERVICE_MODULE) // 注册service的模板
                 .registerRender(GeneratorConstants.CONTROLLER_MODULE) // 注册控制器的模板
                 .generate(); // 开始自动生成
-        log.info("thanks you use,code generator success");
+        log.info("thanks you use,code generator sucess");
         log.info("generator code use {} ms", System.currentTimeMillis() - start);
+    }
+
+    /**
+     * 类型转换器
+     * 
+     * @param sqlTypeConvert
+     * @return
+     */
+    private CodeGenerator setSqlTypeConvert(SqlTypeConvert sqlTypeConvert) {
+        this.sqlTypeConvert = sqlTypeConvert;
+        return this;
     }
 
     /**
      * 是否使用数据库进行创建
      * 
-     * @param isUseDb 是否使用数据库
-     * @return this
+     * @param isUseDb
+     * @return
      */
     private CodeGenerator useDb(boolean isUseDb) {
         config.setUseDb(isUseDb);
@@ -107,8 +127,8 @@ public class CodeGenerator {
     /**
      * 反射获取实体的父类
      * 
-     * @param superEntityClass 父类包名
-     * @return this
+     * @param superEntityClass
+     * @return
      */
     private CodeGenerator packSuperClazz(String superEntityClass) {
         try {
@@ -238,7 +258,7 @@ public class CodeGenerator {
     }
 
     public void generate() {
-        List<EntityInfo> entityInfos;
+        List<EntityInfo> entityInfos = null;
         if (!config.isUseDb()) {
             log.info("use entity package generator");
             entityInfos = config.getEntityClasses().stream().map(entityParser::parse).filter(Objects::nonNull)
@@ -248,23 +268,33 @@ public class CodeGenerator {
             entityInfos = getEntityFromDb();
             entityInfos.forEach(e -> {
                 e.setPackageName(config.getEntityFlag());
+                Optional<FieldInfo> fieldOptional = e.getFields().stream()
+                        .filter(a -> Objects.equals(Boolean.TRUE, a.getIsPk())).findFirst();
                 IdInfo idInfo = new IdInfo();
-                idInfo.setClassName(config.getEntityIdClass());
-                idInfo.setPackageName(config.getEntityIdPackName());
+                if (fieldOptional.isPresent()) {
+                    idInfo.setClassName(fieldOptional.get().getClassName());
+                    idInfo.setPackageName(fieldOptional.get().getPackageName());
+                    e.setHasPk(Boolean.TRUE);
+                } else {
+                    idInfo.setClassName(config.getEntityIdClass());
+                    idInfo.setPackageName(config.getEntityIdPackName());
+                }
                 e.setId(idInfo);
             });
         }
 
         if (!CollectionUtils.isEmpty(entityInfos)) {
             log.info("find {} entity classes, now start generate code.", entityInfos.size());
-            entityInfos.forEach(e -> moduleList.forEach(m -> {
-                // 不使用数据库创建的，存在实体模板，直接跳过
-                if (Objects.equals(GeneratorConstants.ENTITY_MODULE, m) && !config.isUseDb()) {
-                } else {
-                    render.render(e, m, config.getBaseProjectPath());
-                }
+            entityInfos.forEach(e -> {
+                moduleList.forEach(m -> {
+                    // 不使用数据库创建的，存在实体模板，直接跳过
+                    if (Objects.equals(GeneratorConstants.ENTITY_MODULE, m) && !config.isUseDb()) {
+                    } else {
+                        render.render(e, m, config.getBaseProjectPath());
+                    }
 
-            }));
+                });
+            });
         } else {
             log.warn("find none entity class, please check your entity package or db is true.");
         }
@@ -273,7 +303,7 @@ public class CodeGenerator {
     /**
      * 从数据库中获取实体的信息
      * 
-     * @return 实体字段信息集合
+     * @return
      */
     private List<EntityInfo> getEntityFromDb() {
         List<String> superFieldList;
@@ -285,7 +315,7 @@ public class CodeGenerator {
             superFieldList = new ArrayList<>();
         }
         log.info("use db ,the jdbc url is {}", config.getDbProperties().getJdbcUrl());
-        return DataBaseEntityUtils.getEntityFromDb(config.getDbProperties(), superFieldList);
+        return DataBaseEntityUtils.getEntityFromDb(config.getDbProperties(), superFieldList, sqlTypeConvert);
     }
 
     /**

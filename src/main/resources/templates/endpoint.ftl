@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,11 +32,12 @@ import ${lastRenderResponse.service.packageName}.${lastRenderResponse.service.cl
 
 /**
  * controller for ${entity.className}
- * ${comments}
+ * ${entity.comment}
  *
  * @author ${author}
  * @since ${date}.
  */
+@Validated
 @RestController
 @RequestMapping("/${entity.className?uncap_first}")
 public class ${className} extends BaseEndpoint {
@@ -48,7 +51,7 @@ public class ${className} extends BaseEndpoint {
      * @param ${lastRenderResponse.dto.className?uncap_first} 请求参数
      */
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
+    public ResponseEntity<?> create(@RequestBody @Valid ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.create(${lastRenderResponse.dto.className?uncap_first});
         return super.doResource(${entity.className?uncap_first}Resp, this.getClass());
     }
@@ -61,7 +64,7 @@ public class ${className} extends BaseEndpoint {
     @DeleteMapping("/{ids}")
     public ResponseDto<?> delete(@PathVariable List<${entity.id.className}> ids) {
         ${lastRenderResponse.service.className?uncap_first}.deleteByIds(ids);
-        return ResponseDto.success(null);
+        return ResponseDto.success(Boolean.TRUE);
     }
 
     /**
@@ -71,7 +74,7 @@ public class ${className} extends BaseEndpoint {
      * @param id 主键id
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable ${entity.id.className} id,@RequestBody ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
+    public ResponseEntity<?> update(@PathVariable ${entity.id.className} id,@RequestBody @Valid ${lastRenderResponse.dto.className} ${lastRenderResponse.dto.className?uncap_first}) {
         ${lastRenderResponse.response.className} ${entity.className?uncap_first}Resp = ${lastRenderResponse.service.className?uncap_first}.update(id,${lastRenderResponse.dto.className?uncap_first});
         return super.doResource(${entity.className?uncap_first}Resp, this.getClass());
     }
