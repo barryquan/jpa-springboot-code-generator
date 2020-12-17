@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,6 +17,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.github.barry.akali.base.utils.IConstants;
+
+import lombok.ToString;
 
 /**
  * 基础实体信息<br>
@@ -24,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * @author barry
  *
  */
+@ToString
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity implements Serializable {
@@ -35,7 +40,7 @@ public abstract class BaseEntity implements Serializable {
 
     /** 实体ID, 主键 */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
 
     /**
@@ -46,7 +51,7 @@ public abstract class BaseEntity implements Serializable {
 
     /** 实体创建时间 */
     @CreatedDate
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IConstants.DATE_TIME_MS_FORMAT)
     protected LocalDateTime createdDate;
 
     /**
@@ -62,6 +67,9 @@ public abstract class BaseEntity implements Serializable {
 
     /** 实体删除标记，为false表示删除 */
     protected Boolean isActive = Boolean.TRUE;
+
+    @Version
+    private Integer version = 0;
 
     public Long getId() {
         return id;
@@ -109,6 +117,14 @@ public abstract class BaseEntity implements Serializable {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
 }

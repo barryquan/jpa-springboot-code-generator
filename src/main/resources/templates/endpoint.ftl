@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.barry.akali.base.BaseEndpoint;
 import com.github.barry.akali.base.dto.ResponseDto;
 import com.github.barry.akali.base.utils.IConstants;
-import com.github.barry.akali.base.utils.PageInfo;
+import com.github.barry.akali.base.utils.PageReqDto;
 import ${lastRenderResponse.dto.packageName}.${lastRenderResponse.dto.className};
 import ${lastRenderResponse.response.packageName}.${lastRenderResponse.response.className};
 import ${lastRenderResponse.service.packageName}.${lastRenderResponse.service.className};
@@ -100,7 +100,7 @@ public class ${className} extends BaseEndpoint {
             ServletRequest request) {
         // 获取搜索参数
         Map<String, Object> searchParams = super.getSearchParamStartWith(request, IConstants.EMPTY_SEARCH_PREFIX);
-        PageInfo pageInfo = new PageInfo(pageNumber, pageSize, sortTypes);
+        PageReqDto pageInfo = new PageReqDto(pageNumber, pageSize, sortTypes);
         Page<${lastRenderResponse.response.className}> page = ${lastRenderResponse.service.className?uncap_first}.getPageList(searchParams, pageInfo);
         return super.doPage(pageNumber, pageSize, sortTypes, request, this.getClass(), page);
     }

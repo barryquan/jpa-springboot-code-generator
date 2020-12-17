@@ -12,7 +12,8 @@ import org.springframework.util.Assert;
 
 import com.github.barry.akali.base.dto.BaseSearchDto;
 import com.github.barry.akali.base.BaseService;
-import com.github.barry.akali.base.utils.PageInfo;
+import com.github.barry.akali.base.utils.PageReqDto;
+import com.github.barry.akali.base.utils.SearchFilter;
 import ${entity.packageName}.${entity.className};
 import ${lastRenderResponse.dto.packageName}.${lastRenderResponse.dto.className};
 import ${lastRenderResponse.response.packageName}.${lastRenderResponse.response.className};
@@ -109,11 +110,11 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @param pageInfo     分页信息
      * @return 分页列表
      */
-    public Page<${lastRenderResponse.response.className}> getPageList(Map<String, Object> searchParams, PageInfo pageInfo) {
-        BaseSearchDto searchDto = super.conver(searchParams, ${entity.className}SearchDto.class);
-        Map<String, Object> searchMap = searchDto.getSearchParams();
-        log.debug("${entity.className}的分页搜索的条件是={},排序的字段为={}", searchMap, pageInfo.getSortType());
-        return super.getPageData(searchMap, pageInfo, Direction.DESC, ${lastRenderResponse.response.className}.class);
+    public Page<${lastRenderResponse.response.className}> getPageList(Map<String, Object> searchParams, PageReqDto pageInfo) {
+        BaseSearchDto searchDto = super.map2Bean(searchParams, ${entity.className}SearchDto.class);
+        List<SearchFilter> searchFilters = searchDto.getSearchFilters();
+        log.debug("${entity.className}的分页搜索的条件是={},排序的字段为={}", searchFilters, pageInfo.getSortType());
+        return super.getPageData(searchFilters, pageInfo, Direction.DESC, ${lastRenderResponse.response.className}.class);
     }
 
     /**
@@ -123,9 +124,9 @@ public class ${className} extends BaseService<${entity.className}, ${entity.id.c
      * @return 信息列表
      */
     public List<${lastRenderResponse.response.className}> findByParams(Map<String, Object> searchParams, String sortTypes) {
-        BaseSearchDto searchDto = super.conver(searchParams, ${entity.className}SearchDto.class);
+        BaseSearchDto searchDto = super.map2Bean(searchParams, ${entity.className}SearchDto.class);
         log.debug("${entity.className}的不分页搜索的参数是={}", searchDto);
-        return super.getListData(searchDto.getSearchParams(), ${lastRenderResponse.response.className}.class, Direction.DESC,
+        return super.getListData(searchDto.getSearchFilters(), ${lastRenderResponse.response.className}.class, Direction.DESC,
                 sortTypes.split(","));
     }
 

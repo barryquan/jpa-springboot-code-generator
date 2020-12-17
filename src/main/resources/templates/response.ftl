@@ -5,6 +5,7 @@ import org.springframework.hateoas.server.core.Relation;
 import com.github.barry.akali.base.dto.BaseResponseDto;
 <#if hasDateParam>
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.github.barry.akali.base.utils.IConstants;
 </#if>
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,7 +38,7 @@ public class ${className} extends BaseResponseDto {
      * ${f.comment}
      */
     <#if f.className == 'LocalDateTime'>
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IConstants.DATE_TIME_MS_FORMAT)
     </#if>
     private ${f.className} ${f.name};
 

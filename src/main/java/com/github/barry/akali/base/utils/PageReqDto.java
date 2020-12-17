@@ -6,7 +6,7 @@ package com.github.barry.akali.base.utils;
  * @author barry
  *
  */
-public class PageInfo {
+public class PageReqDto {
 
     /** 当前分页页码 */
     private int number;
@@ -41,7 +41,7 @@ public class PageInfo {
         this.sortType = sortType;
     }
 
-    public PageInfo(int number, int size, String sortType) {
+    public PageReqDto(int number, int size, String sortType) {
         super();
         this.number = number;
         this.size = size;

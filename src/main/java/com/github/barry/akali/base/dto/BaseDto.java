@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.github.barry.akali.base.utils.IConstants;
+
+import lombok.ToString;
 
 /**
  * 基础Dto信息<br>
@@ -14,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * @author barry
  *
  */
+@ToString
 public abstract class BaseDto implements Serializable {
 
     /**
@@ -30,8 +34,8 @@ public abstract class BaseDto implements Serializable {
     protected String createdBy;
 
     /** 实体创建时间 */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = IConstants.DATE_TIME_MS_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IConstants.DATE_TIME_MS_FORMAT)
     protected LocalDateTime createdDate;
 
     /**
@@ -40,9 +44,9 @@ public abstract class BaseDto implements Serializable {
     protected String lastModifiedBy;
 
     /** 实体更新时间 */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    protected LocalDateTime modifiedDate;
+    @DateTimeFormat(pattern = IConstants.DATE_TIME_MS_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IConstants.DATE_TIME_MS_FORMAT)
+    protected LocalDateTime lastModifiedDate;
 
     /** 实体删除标记，为false表示删除 */
     protected Boolean isActive;
@@ -79,12 +83,12 @@ public abstract class BaseDto implements Serializable {
         this.lastModifiedBy = lastModifiedBy;
     }
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    public LocalDateTime getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
-    public void setModifiedDate(LocalDateTime modifiedDate) {
-        this.modifiedDate = modifiedDate;
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     public Boolean getIsActive() {

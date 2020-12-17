@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -71,10 +69,16 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.dozermapper</groupId>
+            <artifactId>dozer-core</artifactId>
+            <version>6.5.0</version>
+        </dependency>
+
+        <!-- <dependency>
             <groupId>io.beanmapper</groupId>
             <artifactId>beanmapper</artifactId>
             <version>${beanmapper.version}</version>
-        </dependency>
+        </dependency> -->
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 
         <!-- base 包需需要的工具包 start -->

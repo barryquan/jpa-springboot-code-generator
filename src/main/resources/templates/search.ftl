@@ -1,11 +1,13 @@
 package ${packageName};
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.util.StringUtils;
 import com.github.barry.akali.base.dto.BaseSearchDto;
+import com.github.barry.akali.base.utils.SearchFilter;
 <#if hasDateParam>
 import org.springframework.format.annotation.DateTimeFormat;
+import com.github.barry.akali.base.utils.IConstants;
 </#if>
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,7 +33,7 @@ public class ${className} extends BaseSearchDto{
      * ${f.comment}
      */
     <#if f.className == 'LocalDateTime'>
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = IConstants.DATE_TIME_MS_FORMAT)
     </#if>
     private ${f.className} ${f.name};
 
@@ -42,15 +44,15 @@ public class ${className} extends BaseSearchDto{
      * 
      */
     @Override
-    public void buildSearchParams(Map<String, Object> map) {
+    public void buildSearchParams(List<SearchFilter> searchFilterList) {
         <#if entity.fields?? && (entity.fields?size > 0)>
     <#list entity.fields as f>
     <#if f.className == "String">
         if (StringUtils.hasText(this.${f.name})) {
-            super.putNoNull("LIKE_${f.name}", this.${f.name}, map);
+            super.putNoNull(SearchFilter.Operator.LIKE,"${f.name}", this.${f.name}, searchFilterList);
         }
     <#else>
-        super.putNoNull("EQ_${f.name}", this.${f.name}, map);
+        super.putNoNull(SearchFilter.Operator.EQ,"${f.name}", this.${f.name}, searchFilterList);
     </#if>
     </#list>
     </#if>

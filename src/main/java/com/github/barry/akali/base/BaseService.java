@@ -19,14 +19,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.barry.akali.base.conver.EnumConverter;
-import com.github.barry.akali.base.utils.PageInfo;
+import com.github.barry.akali.base.utils.BeanMapperUtils;
+import com.github.barry.akali.base.utils.PageReqDto;
 import com.github.barry.akali.base.utils.RequestSearchUtils;
 import com.github.barry.akali.base.utils.SearchFilter;
 import com.github.barry.akali.base.utils.SearchFilter.Operator;
-
-import io.beanmapper.BeanMapper;
-import io.beanmapper.config.BeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
 
 /**
  * 基础业务模型，用于实现基础的业务功能<br>
@@ -50,7 +48,12 @@ public abstract class BaseService<T, ID extends Serializable> {
     /**
      * 属性复制工具
      */
-    protected BeanMapper beanMapper = new BeanMapperBuilder().addConverter(new EnumConverter()).build();
+//    protected BeanMapper beanMapper = new BeanMapperBuilder().addConverter(new EnumConverter()).build();
+
+    /**
+     * 属性复制工具
+     */
+    protected Mapper dozerBeanMapper = BeanMapperUtils.getDefaultBeanMapper();
 
     /**
      * 默认删除标志的字段
@@ -162,7 +165,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     /**
      * 根据map条件获取查询符合条件的数量
      *
-     * @param searchParams
+     * @param searchParams 搜索条件
      * @return
      */
     @Transactional(readOnly = true)
@@ -281,7 +284,22 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public List<T> findAllBySort(Map<String, Object> searchParams, Direction direction, String... sortType) {
-        return baseRepository.findAll(RequestSearchUtils.buildSpec(searchParams), Sort.by(direction, sortType));
+        return this.findAllBySort(SearchFilter.parse(searchParams), direction, sortType);
+    }
+
+    /**
+     * 查询所有实体，根据排序方式和字段排序<br>
+     * searchParams的参数key必须包含如：EQ_name=xxx<br>
+     * 否则无法正确解析构造动态的jpa搜索条件
+     *
+     * @param searchParams 搜索参数
+     * @param direction    排序方式
+     * @param sortType     排序字段
+     * @return 实体集合
+     */
+    @Transactional(readOnly = true)
+    public List<T> findAllBySort(List<SearchFilter> searchFilters, Direction direction, String... sortType) {
+        return baseRepository.findAll(RequestSearchUtils.bySearchFilter(searchFilters), Sort.by(direction, sortType));
     }
 
     /**
@@ -322,7 +340,23 @@ public abstract class BaseService<T, ID extends Serializable> {
     @Transactional(readOnly = true)
     protected Page<T> findPageBySort(Map<String, Object> searchParams, int pageNumber, int pageSize,
             Direction direction, String... sortType) {
-        return baseRepository.findAll(RequestSearchUtils.buildSpec(searchParams),
+        return this.findPageBySort(SearchFilter.parse(searchParams), pageNumber, pageSize, direction, sortType);
+    }
+
+    /**
+     * 获取分页
+     *
+     * @param searchFilters 搜索参数
+     * @param pageNumber    页码
+     * @param pageSize      分页大小
+     * @param direction     排序方式
+     * @param sortType      排序字段
+     * @return 分页实体信息
+     */
+    @Transactional(readOnly = true)
+    protected Page<T> findPageBySort(List<SearchFilter> searchFilters, int pageNumber, int pageSize,
+            Direction direction, String... sortType) {
+        return baseRepository.findAll(RequestSearchUtils.bySearchFilter(searchFilters),
                 PageRequest.of(pageNumber > 0 ? pageNumber - 1 : pageNumber, pageSize, Sort.by(direction, sortType)));
     }
 
@@ -337,9 +371,30 @@ public abstract class BaseService<T, ID extends Serializable> {
      * @param respClass 出参的clz
      * @return
      */
-    protected <S> Page<S> getPageData(Map<String, Object> searchMap, PageInfo pageInfo, Direction direction,
+    protected <S> Page<S> getPageData(Map<String, Object> searchMap, PageReqDto pageInfo, Direction direction,
             Class<S> respClass) {
         Page<T> page = this.findPageBySort(searchMap, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
+                pageInfo.getSortType().split(","));
+        return CollectionUtils.isEmpty(page.getContent())
+                ? new PageImpl<>(new ArrayList<>(), page.getPageable(), page.getTotalElements())
+                : new PageImpl<>(this.mapperList(page.getContent(), respClass), page.getPageable(),
+                        page.getTotalElements());
+    }
+
+    /**
+     * 获取分页数据，并且转成对应的clz<br>
+     * 1.如果不需要转换的，请使用findPageBySort方法
+     * 
+     * @param <S>
+     * @param searchFilters 搜索参数
+     * @param pageInfo      分页参数
+     * @param direction     排序方式
+     * @param respClass     出参的clz
+     * @return
+     */
+    protected <S> Page<S> getPageData(List<SearchFilter> searchFilters, PageReqDto pageInfo, Direction direction,
+            Class<S> respClass) {
+        Page<T> page = this.findPageBySort(searchFilters, pageInfo.getNumber(), pageInfo.getSize(), Direction.DESC,
                 pageInfo.getSortType().split(","));
         return CollectionUtils.isEmpty(page.getContent())
                 ? new PageImpl<>(new ArrayList<>(), page.getPageable(), page.getTotalElements())
@@ -360,7 +415,23 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     protected <S> List<S> getListData(Map<String, Object> searchMap, Class<S> respClass, Direction direction,
             String... sortType) {
-        List<T> list = this.findAllBySort(searchMap, direction, sortType);
+        return this.getListData(SearchFilter.parse(searchMap), respClass, direction, sortType);
+    }
+
+    /**
+     * 获取集合数据，并且转成对应的clz<br>
+     * 1.如果不需要转换的，请使用findAllBySort方法
+     * 
+     * @param <S>
+     * @param searchFilters 搜索参数
+     * @param respClass     出参的clz
+     * @param direction     排序方式
+     * @param sortType      排序字段
+     * @return
+     */
+    protected <S> List<S> getListData(List<SearchFilter> searchFilters, Class<S> respClass, Direction direction,
+            String... sortType) {
+        List<T> list = this.findAllBySort(searchFilters, direction, sortType);
         return CollectionUtils.isEmpty(list) ? new ArrayList<>() : this.mapperList(list, respClass);
     }
 
@@ -398,7 +469,9 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public void mapper(Object source, Object destination) {
-        beanMapper.map(source, destination);
+        Assert.notNull(source, "来源参数不能为空！");
+        Assert.notNull(destination, "接收参数不能为空！");
+        dozerBeanMapper.map(source, destination);
     }
 
     /**
@@ -411,7 +484,8 @@ public abstract class BaseService<T, ID extends Serializable> {
     @Transactional(readOnly = true)
     public <E> E mapperByClass(Object source, Class<E> clz) {
         Assert.notNull(source, "属性来源实体不能为空");
-        return beanMapper.map(source, clz);
+        Assert.notNull(clz, "转换的class不能为空");
+        return dozerBeanMapper.map(source, clz);
     }
 
     /**
@@ -424,7 +498,15 @@ public abstract class BaseService<T, ID extends Serializable> {
      */
     @Transactional(readOnly = true)
     public <D, E> List<E> mapperList(List<D> sourceList, Class<E> clz) {
-        return beanMapper.map(sourceList, clz);
+        if (CollectionUtils.isEmpty(sourceList)) {
+            return new ArrayList<>();
+        }
+        List<E> respList = new ArrayList<>(sourceList.size());
+        sourceList.forEach(s -> {
+            respList.add(this.mapperByClass(s, clz));
+        });
+        return respList;
+//        return beanMapper.map(sourceList, clz);
     }
 
     /**
@@ -436,8 +518,20 @@ public abstract class BaseService<T, ID extends Serializable> {
      * @param cls    目标转换的class
      * @return
      */
-    public <S> S conver(Object source, Class<S> cls) {
+    public <S> S obj2Bean(Object source, Class<S> cls) {
         return objectMapper.convertValue(source, cls);
+    }
+
+    /**
+     * 将map转换成bean
+     * 
+     * @param <S>
+     * @param sourceMap map数据集
+     * @param cls       目标转换的class
+     * @return
+     */
+    public <S> S map2Bean(Map<?, ?> sourceMap, Class<S> cls) {
+        return this.obj2Bean(sourceMap, cls);
     }
 
 }

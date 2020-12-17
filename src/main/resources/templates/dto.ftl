@@ -3,6 +3,7 @@ package ${packageName};
 
 <#if hasDateParam>
 import org.springframework.format.annotation.DateTimeFormat;
+import com.github.barry.akali.base.utils.IConstants;
 </#if>
 
 import com.github.barry.akali.base.dto.BaseRequestDto;
@@ -37,7 +38,7 @@ public class ${className} extends BaseRequestDto {
      * ${f.comment}
      */
     <#if f.className == 'LocalDateTime'>
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = IConstants.DATE_TIME_MS_FORMAT)
     </#if>
     private ${f.className} ${f.name};
 
